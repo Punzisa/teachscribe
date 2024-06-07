@@ -1,9 +1,9 @@
 import AppButton from '@/components/Button'
 import { useWarmUpBrowser } from '@/hooks/useWarmUpBrowser'
 import { useOAuth } from '@clerk/clerk-expo'
-import { router } from 'expo-router'
+import { Link, router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 
 WebBrowser.maybeCompleteAuthSession()
@@ -45,22 +45,22 @@ const SignInWithOAuth = () => {
   const loginWithMicroSoft = () => loginWithOAuth(startMicroSoftOAuthFlow)
 
   const onPress = () => {
-    console.log('Sign in with email')
+    router.push('/auth/sign-in')
   }
 
   return (
     <>
       <View className="flex flex-1 justify-center items-center px-2">
         <AppButton icon={require('../../assets/google.png')} onPress={loginWithGoogle}>
-          Continue with Google
+          Sign in with Google
         </AppButton>
 
         <AppButton icon={require('../../assets/facebook.png')} onPress={loginWithFacebook}>
-          Continue with Facebook
+          Sign in with Facebook
         </AppButton>
 
         <AppButton icon={require('../../assets/microsoft.png')} onPress={loginWithMicroSoft}>
-          Continue with Microsoft
+          Sign in with Microsoft
         </AppButton>
 
         <View className="flex flex-col items-center justify-center mt-4">
@@ -73,9 +73,27 @@ const SignInWithOAuth = () => {
               {/* 
               TODO: Add functionality for sign up
               */}
-              <Text className="text-blue-500 ml-2">Sign up</Text>
+              <Link className="text-blue-500 ml-2" href="/auth/sign-up">
+                Sign up
+              </Link>
             </TouchableOpacity>
           </View>
+          {/*  Terms of Service and Privacy Policy, including Cookie Use. */}
+        </View>
+        <View className="flex flex-row flex-wrap justify-center items-center mt-4">
+          <Text className="text-gray-500">By signing in, you agree to our</Text>
+          <Link className="text-blue-500 ml-2" href="/auth/terms">
+            Terms of Service
+          </Link>
+          <Text className="text-gray-500"> and</Text>
+          <Link className="text-blue-500 ml-2" href="/auth/privacy">
+            Privacy Policy
+          </Link>
+          <Text className="text-gray-500">,including</Text>
+          <Link className="text-blue-500 ml-2" href="/auth/cookie">
+            Cookie Use
+          </Link>
+          <Text className="text-gray-500">.</Text>
         </View>
       </View>
     </>
