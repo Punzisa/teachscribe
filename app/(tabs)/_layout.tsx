@@ -13,7 +13,7 @@ export default function TabLayout() {
     return null
   }
   if (!isSignedIn) {
-    return <Redirect href="/sign-in" />
+    return <Redirect href="/auth" />
   }
 
   return (
