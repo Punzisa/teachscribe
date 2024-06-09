@@ -10,6 +10,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
+    "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "prepare": "husky || true"
   },
