@@ -9,7 +9,7 @@ export default function SignUp() {
       {/* Already have an sign in here */}
       <View className="flex flex-row">
         <Text>Already have an account? </Text>
-        <Link href="/auth" className="text-blue-500 hover:underline">
+        <Link href="/" className="text-blue-500 hover:underline">
           Sign in
         </Link>
       </View>

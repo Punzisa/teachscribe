@@ -1,12 +1,13 @@
-import { Image, StyleSheet, Platform } from 'react-native'
+import { Image, Platform, StyleSheet } from 'react-native'
 
 import { HelloWave } from '@/components/HelloWave'
 import ParallaxScrollView from '@/components/ParallaxScrollView'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import SignOut from '@/components/SignOut'
+import { useSession } from '@/context/auth'
 
 export default function HomeScreen() {
+  const { signOut } = useSession()
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,8 +20,15 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
-        <SignOut />
       </ThemedView>
+      <ThemedText
+        onPress={() => {
+          // The `app/(app)/_layout.tsx` will redirect to the sign-in screen.
+          signOut()
+        }}>
+        Sign Out
+      </ThemedText>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
