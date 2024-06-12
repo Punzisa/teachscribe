@@ -24,5 +24,5 @@ export default function SignIn() {
     router.replace('/(tabs)')
   }
 
-  return <AuthForm schema={schema} title="Sign Up" onSubmit={onSubmit} isSignUp={true} />
+  return <AuthForm schema={schema} title="Sign In" onSubmit={onSubmit} isSignUp={false} />
 }

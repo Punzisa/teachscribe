@@ -7,6 +7,11 @@ const tintColorLight = '#0a7ea4'
 const tintColorDark = '#fff'
 
 export const Colors = {
+  primary: '#0079FF',
+  secondary: '#6DC5D1',
+  black: '#000',
+  white: '#fff',
+  medium: '#6e6969',
   light: {
     text: '#11181C',
     background: '#fff',
@@ -23,4 +28,10 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+}
+
+export const socialLoginIcon = {
+  google: require('@/assets/google.png'),
+  facebook: require('@/assets/facebook.png'),
+  microsoft: require('@/assets/microsoft.png'),
 }
