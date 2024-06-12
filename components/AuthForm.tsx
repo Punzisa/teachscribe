@@ -3,10 +3,12 @@ import FormField from '@/components/forms/FormField'
 import SocialLoginButtons from '@/components/SocialLoginButtons'
 import { socialLoginIcon } from '@/constants/Colors'
 import { StyledText, StyledView } from '@/constants/nativewindWrapper'
+import { useSession } from '@/context/auth'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { router } from 'expo-router'
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { GestureResponderEvent } from 'react-native'
 import * as yup from 'yup'
 
 type FormValues = {
@@ -22,12 +24,6 @@ interface AuthFormProps {
   schema: yup.AnyObjectSchema
 }
 
-// const schema = yup.object().shape({
-//   email: yup.string().email().required(),
-//   password: yup.string().required(),
-//   confirmPassword: yup.string().oneOf([yup.ref('password'), undefined], 'Passwords must match'),
-// })
-
 const AuthForm: React.FC<AuthFormProps> = ({ title, onSubmit, isSignUp, schema }) => {
   const { control, handleSubmit } = useForm<FormValues>({
     resolver: yupResolver(schema),
@@ -38,7 +34,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ title, onSubmit, isSignUp, schema }
     },
     mode: 'onChange',
   })
+  const { signIn } = useSession()
 
+  const handleSocialSign = (event: GestureResponderEvent) => {
+    console.log(`Sign in with ${event}`)
+
+    signIn()
+    router.replace('/(tabs)')
+  }
   return (
     <StyledView className=" flex-1 justify-start items-center px-2 mt-8 android:mt-4">
       <StyledText className="text-2xl font-bold text-center mb-4">{title}</StyledText>
@@ -77,7 +80,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ title, onSubmit, isSignUp, schema }
 
       <AppButton onPress={handleSubmit(onSubmit)}>{title}</AppButton>
       <StyledText className="text-center mt-4 mb-2">Or sign in with</StyledText>
-      <SocialLoginButtons title={`Sign in with`} socialLoginIcon={socialLoginIcon} />
+      <SocialLoginButtons
+        onPress={handleSocialSign}
+        title={`Sign in with`}
+        socialLoginIcon={socialLoginIcon}
+      />
     </StyledView>
   )
 }
