@@ -34,13 +34,12 @@ const lessonData: LessonView = {
   teachersSignature: 'Mr. Ngongo',
 }
 
-
 export default function ViewLesson() {
-  const colorScheme = useColorScheme();
-  
+  const colorScheme = useColorScheme()
+
   const closeButtonPressed = () => {
-    console.log('Icon pressed');
-  };
+    console.log('Icon pressed')
+  }
   return (
     <ScrollView className="mt-10 min-h-screen flex-1">
       <ThemedView style={styles.container} className="">
@@ -49,12 +48,13 @@ export default function ViewLesson() {
             <ThemedView style={styles.titleContainer}>
               <ThemedText type="subtitle">Summary</ThemedText>
             </ThemedView>
-            <View className={` ${colorScheme == 'light'? 'bg-green-400 text-yellow-800' : 'bg-green-600' }  rounded-lg  p-1.5`}>
-              <Text className=''>{lessonData.status}</Text>
+            <View
+              className={` ${colorScheme === 'light' ? 'bg-green-400 text-yellow-800' : 'bg-green-600'}  rounded-lg  p-1.5`}>
+              <Text className="">{lessonData.status}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={closeButtonPressed}>
-            <Ionicons name="close" size={28} color={colorScheme === 'light'? 'black': 'white'} />
+            <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
           </TouchableOpacity>
         </View>
         <View className="mb-4">
@@ -93,7 +93,6 @@ export default function ViewLesson() {
           <ThemedText type="defaultSemiBold">Teacher's Signature:</ThemedText>
           <ThemedText>{lessonData.teachersSignature}</ThemedText>
         </View>
-
       </ThemedView>
     </ScrollView>
   )
