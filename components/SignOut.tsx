@@ -1,15 +1,13 @@
-import { useAuth } from '@clerk/clerk-expo'
 import { Text, View } from 'react-native'
 
 const SignOut = () => {
-  const { isLoaded, signOut } = useAuth()
-  if (!isLoaded) {
-    return null
+  const handleSignOut = async () => {
+    console.log('sign out')
   }
 
   return (
     <View>
-      <Text onPress={() => signOut()}>Sign Out</Text>
+      <Text onPress={handleSignOut}>Sign Out</Text>
     </View>
   )
 }

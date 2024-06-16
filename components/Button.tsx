@@ -1,25 +1,35 @@
 import { Colors } from '@/constants/Colors'
+import { StyledText, StyledView } from '@/constants/nativewindWrapper'
 import React from 'react'
-import { Image, Pressable, Text, View } from 'react-native'
+import { Image, Pressable } from 'react-native'
 
 interface AppButtonProps extends React.ComponentProps<typeof Pressable> {
-  children: React.ReactNode
-  onPress: () => void
+  children?: React.ReactNode
   color?: keyof typeof Colors
-  style?: object
+  styles?: object
   className?: string
   icon?: React.ReactNode
 }
 
-function AppButton({ children, onPress, icon }: AppButtonProps) {
+function AppButton({ children, onPress, icon, styles, ...rest }: AppButtonProps) {
   return (
     <Pressable
-      className="rounded-xl bg-primary-800  px-8 py-3 mx-4 my-2 justify-center items-center"
-      onPress={onPress}>
-      <View className="flex flex-row justify-between items-center">
+      className={`rounded-xl ios:bg-blue-600 android:bg-blue-500 ios:px-8 android:px-6 ios:py-3 android:py-2 my-2  justify-center items-center w-full mx-auto`}
+      onPress={onPress}
+      style={styles}
+      {...rest}>
+      <StyledView
+        className={`flex flex-row justify-between items-center
+     
+      `}>
         {icon && <Image source={icon as any} className="w-5 h-5" />}
-        <Text className="text-white text-lg font-bold flex-1 text-center">{children}</Text>
-      </View>
+        <StyledText
+          className={`text-white text-lg android:text-[16px] font-bold flex-1 text-center
+          
+          `}>
+          {children}
+        </StyledText>
+      </StyledView>
     </Pressable>
   )
 }

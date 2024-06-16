@@ -5,9 +5,6 @@ const AuthLayOut = () => {
   return (
     <Stack
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#f4511e',
-        },
         headerTitle: '',
       }}
     />
