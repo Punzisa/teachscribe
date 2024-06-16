@@ -8,6 +8,7 @@ import {
 } from '@/components/forms/LessonPlan/constants'
 import { primary } from '@/constants/Colors'
 import LessonDetails from '@/components/forms/LessonPlan/LessonDetails'
+import LessonObjectives from '@/components/forms/LessonPlan/LessonObjectives'
 
 export default function LessonPlan() {
   return (
@@ -33,8 +34,8 @@ export default function LessonPlan() {
         onPrevious={() => {}}
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
-        <View style={{ alignItems: 'center' }}>
-          <Text>Lesson Objectives</Text>
+        <View style={containerStyles.container}>
+          <LessonObjectives />
         </View>
       </ProgressStep>
       <ProgressStep

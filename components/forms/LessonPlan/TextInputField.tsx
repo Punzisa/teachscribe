@@ -4,19 +4,47 @@ import { Ionicons } from '@expo/vector-icons'
 
 import { lightGrey } from '@/constants/Colors'
 
-const TextInputField = ({ icon = null, placeholder = 'Lesson Name', ...props }) => {
+type Props = {
+  icon: null | typeof Ionicons.defaultProps
+  placeholder: string
+  onInputChange?: (value: string) => void
+  onIconClick?: (value: string) => void
+}
+
+const TextInputField = ({
+  icon = null,
+  placeholder = 'Lesson Name',
+  onInputChange,
+  onIconClick,
+  ...props
+}: Props) => {
   const [text, setText] = useState('')
+
+  const onChangeText = (value: string) => {
+    setText(value)
+    if (onInputChange !== undefined && onInputChange !== null) {
+      onInputChange(value)
+    }
+  }
+
+  const onConfirm = () => {
+    if (onIconClick !== undefined && onIconClick !== null) {
+      onIconClick(text)
+      setText('')
+    }
+  }
+
   return (
     <View style={styles.container}>
       <TextInput
         value={text}
         placeholder={placeholder}
-        onChangeText={(v) => setText(v)}
+        onChangeText={onChangeText}
         style={styles.input}
         {...props}
       />
       {icon !== null && (
-        <TouchableOpacity style={styles.icon}>
+        <TouchableOpacity style={styles.icon} onPress={() => onConfirm}>
           <Ionicons name={icon} size={22} color={lightGrey} />
         </TouchableOpacity>
       )}
@@ -34,7 +62,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   icon: {
-    marginLeft: 7,
+    marginHorizontal: 7,
   },
   input: {
     flex: 1,
