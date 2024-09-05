@@ -1,14 +1,11 @@
 import { TabBarIcon } from '@/components/navigation/TabBarIcon'
-import { Colors } from '@/constants/Colors'
 import { useSession } from '@/context/auth'
-import { useColorScheme } from '@/hooks/useColorScheme'
 import { Redirect, Tabs } from 'expo-router'
 import React from 'react'
 import { Text } from 'react-native'
+import { primary } from '@/constants/Colors'
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme()
-
   const { session, isLoading } = useSession()
 
   // You can keep the splash screen open, or render a loading screen like we do here.
@@ -27,24 +24,25 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: primary,
+        tabBarInactiveTintColor: primary,
         headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={primary} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="lesson_plan"
         options={{
           title: 'Add Lesson Plan',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon name={focused ? 'add-circle' : 'add-circle-outline'} color={primary} />
           ),
         }}
       />
