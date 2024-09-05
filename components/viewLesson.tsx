@@ -2,9 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { View } from 'react-native'
-import { ThemedView } from '@/components/ThemedView'
-import { ThemedText } from '@/components/ThemedText'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { useRouter } from 'expo-router'
 
 interface LessonView {
   lessonName: string
@@ -36,18 +35,19 @@ const lessonData: LessonView = {
 
 export default function ViewLesson() {
   const colorScheme = useColorScheme()
+  const router = useRouter()
 
   const closeButtonPressed = () => {
-    console.log('Icon pressed')
+    router.replace('/(tabs)/')
   }
   return (
     <ScrollView className="mt-10 min-h-screen flex-1">
-      <ThemedView style={styles.container} className="">
+      <View style={styles.container} className="">
         <View className="mb-2 flex flex-row justify-between items-center">
           <View className="flex flex-row items-center justify-between gap-6">
-            <ThemedView style={styles.titleContainer}>
-              <ThemedText type="subtitle">Summary</ThemedText>
-            </ThemedView>
+            <View style={styles.titleContainer}>
+              <Text>Summary</Text>
+            </View>
             <View
               className={` ${colorScheme === 'light' ? 'bg-green-400 text-yellow-800' : 'bg-green-600'}  rounded-lg  p-1.5`}>
               <Text className="">{lessonData.status}</Text>
@@ -59,41 +59,41 @@ export default function ViewLesson() {
         </View>
         <View className="mb-4">
           <View className="flex flex-row gap-2">
-            <ThemedText type="defaultSemiBold">Lesson Name:</ThemedText>
-            <ThemedText>{lessonData.lessonName}</ThemedText>
+            <Text>Lesson Name:</Text>
+            <Text>{lessonData.lessonName}</Text>
           </View>
           <View className="flex flex-row gap-4">
-            <ThemedText type="defaultSemiBold">School Name:</ThemedText>
-            <ThemedText>{lessonData.schoolName}</ThemedText>
+            <Text>School Name:</Text>
+            <Text>{lessonData.schoolName}</Text>
           </View>
           <View className="flex flex-row gap-4">
-            <ThemedText type="defaultSemiBold">Teacher Name:</ThemedText>
-            <ThemedText>{lessonData.teacherName}</ThemedText>
+            <Text>Teacher Name:</Text>
+            <Text>{lessonData.teacherName}</Text>
           </View>
           <View className="flex flex-row gap-4">
-            <ThemedText type="defaultSemiBold">Date:</ThemedText>
-            <ThemedText>{lessonData.date.toDateString()}</ThemedText>
+            <Text>Date:</Text>
+            <Text>{lessonData.date.toDateString()}</Text>
           </View>
         </View>
 
         <View className="mb-16 flex flex-col gap-2">
-          <ThemedText type="defaultSemiBold">Lesson Objectives</ThemedText>
-          <ThemedText>{lessonData.lessonObjectives}</ThemedText>
+          <Text>Lesson Objectives</Text>
+          <Text>{lessonData.lessonObjectives}</Text>
 
-          <ThemedText type="defaultSemiBold">Teaching Aids</ThemedText>
-          <ThemedText>{lessonData.teachingAids}</ThemedText>
+          <Text>Teaching Aids</Text>
+          <Text>{lessonData.teachingAids}</Text>
 
-          <ThemedText type="defaultSemiBold">Teaching Activities</ThemedText>
-          <ThemedText>{lessonData.teachingActivities}</ThemedText>
+          <Text>Teaching Activities</Text>
+          <Text>{lessonData.teachingActivities}</Text>
 
-          <ThemedText type="defaultSemiBold">Pupil's Activities</ThemedText>
-          <ThemedText>{lessonData.pupilActivities}</ThemedText>
+          <Text>Pupil's Activities</Text>
+          <Text>{lessonData.pupilActivities}</Text>
         </View>
         <View className="flex flex-row gap-4">
-          <ThemedText type="defaultSemiBold">Teacher's Signature:</ThemedText>
-          <ThemedText>{lessonData.teachersSignature}</ThemedText>
+          <Text>Teacher's Signature:</Text>
+          <Text>{lessonData.teachersSignature}</Text>
         </View>
-      </ThemedView>
+      </View>
     </ScrollView>
   )
 }
