@@ -42,6 +42,12 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
+            <Stack.Screen
+              name="(lesson)/view_lesson"
+              options={{
+                headerShown: false,
+              }}
+            />
           </Stack>
         </GestureHandlerRootView>
       </ThemeProvider>
