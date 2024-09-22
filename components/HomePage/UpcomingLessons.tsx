@@ -98,11 +98,9 @@ const UpcomingLessons = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming Lessons</Text>
-      <FlatList
-        data={dummyData}
-        renderItem={({ item }) => <LessonCard item={item} />}
-        keyExtractor={(item) => item.id}
-      />
+      {dummyData.map((item) => (
+        <LessonCard key={item.id} item={item} />
+      ))}
     </View>
   )
 }

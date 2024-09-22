@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps'
 
 import {
@@ -9,8 +9,11 @@ import {
 import { primary } from '@/constants/Colors'
 import LessonDetails from '@/components/forms/LessonPlan/LessonDetails'
 import LessonObjectives from '@/components/forms/LessonPlan/LessonObjectives'
+import Activities from './Activities'
+import { useRouter } from 'expo-router'
 
 export default function LessonPlan() {
+  const router = useRouter();
   return (
     <ProgressSteps
       activeStepIconBorderColor={primary}
@@ -41,11 +44,11 @@ export default function LessonPlan() {
       <ProgressStep
         label="Activities"
         onPrevious={() => {}}
-        onSubmit={() => {}}
+        onSubmit={() => {router.replace(`/(lesson)/creating_lesson`)}}
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
-        <View style={{ alignItems: 'center' }}>
-          <Text>Activities</Text>
+        <View style={containerStyles.container}>
+          <Activities />
         </View>
       </ProgressStep>
     </ProgressSteps>

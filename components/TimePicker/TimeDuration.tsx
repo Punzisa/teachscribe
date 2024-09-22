@@ -30,13 +30,25 @@ export const formatTime = ({
   return timeParts.join(':')
 }
 
+function convertTimeDurationToHoursAndMinutes(timeDurationString: string): string {
+  const [hours, minutes, seconds] = timeDurationString.split(':').map(Number)
+
+  if (hours === 0) {
+    return `${minutes} minutes`
+  } else if (hours === 1) {
+    return `${hours} hour ${minutes} minutes`
+  } else {
+    return `${hours} hours ${minutes} minutes`
+  }
+}
+
 export default function TimeDuration() {
   const [showPicker, setShowPicker] = useState(false)
   const [timeDurationString, setTimeDurationString] = useState<string | null>(null)
 
   return (
     <>
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center', backgroundColor: 'white' }}>
         <Button
           outline
           outlineColor={lightGrey}
@@ -44,7 +56,11 @@ export default function TimeDuration() {
           borderRadius={7}
           style={{ height: 50, width: '100%', justifyContent: 'flex-start' }}
           onPress={() => setShowPicker(true)}>
-          {timeDurationString !== null ? <Text>{timeDurationString}</Text> : <Text />}
+          {timeDurationString !== null ? (
+            <Text>{convertTimeDurationToHoursAndMinutes(timeDurationString)}</Text>
+          ) : (
+            <Text />
+          )}
         </Button>
       </View>
       <TimerPickerModal

@@ -10,7 +10,7 @@ const GetStarted = () => {
     {
       id: '1',
       text: 'Lesson Plans',
-      route: '(lesson)/view_lesson',
+      route: '(lesson)/lesson_plans',
       colors: ['#893E9C', '#F82B73'],
     },
     { id: '2', text: 'Schemes of Work', route: '/route2', colors: ['#548AD8', '#8A4BD3'] },

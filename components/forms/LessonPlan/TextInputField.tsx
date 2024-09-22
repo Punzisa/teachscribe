@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 
-import { lightGrey } from '@/constants/Colors'
+import { Colors, lightGrey } from '@/constants/Colors'
 
 type Props = {
-  icon: null | typeof Ionicons.defaultProps
+  icon?: null | typeof Ionicons.defaultProps
   placeholder: string
   onInputChange?: (value: string) => void
   onIconClick?: (value: string) => void
+  setTextValue?: string
 }
 
 const TextInputField = ({
@@ -16,6 +17,7 @@ const TextInputField = ({
   placeholder = 'Lesson Name',
   onInputChange,
   onIconClick,
+  setTextValue,
   ...props
 }: Props) => {
   const [text, setText] = useState('')
@@ -34,6 +36,12 @@ const TextInputField = ({
     }
   }
 
+  useEffect(() => {
+    if (setTextValue !== undefined) {
+      setText(setTextValue)
+    }
+  }, [setTextValue])
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -44,7 +52,7 @@ const TextInputField = ({
         {...props}
       />
       {icon !== null && (
-        <TouchableOpacity style={styles.icon} onPress={() => onConfirm}>
+        <TouchableOpacity style={styles.icon} onPress={onConfirm}>
           <Ionicons name={icon} size={22} color={lightGrey} />
         </TouchableOpacity>
       )}
@@ -55,6 +63,7 @@ const TextInputField = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.white,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 50,
+    minHeight: 50,
     padding: 10,
   },
 })
