@@ -48,6 +48,22 @@ export default function RootLayout() {
                 headerShown: false,
               }}
             />
+            <Stack.Screen
+              name="(lesson)/creating_lesson"
+              options={{
+                headerShown: true,
+                headerTitle: 'Creating Lesson',
+                headerBackVisible: false,
+              }}
+            />
+            <Stack.Screen
+              name="(lesson)/lesson_plans"
+              options={{
+                headerShown: true,
+                headerTitle: 'Lessons - Class',
+                headerBackTitleVisible: false,
+              }}
+            />
           </Stack>
         </GestureHandlerRootView>
       </ThemeProvider>
