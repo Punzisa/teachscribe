@@ -13,7 +13,7 @@ import Activities from './Activities'
 import { useRouter } from 'expo-router'
 
 export default function LessonPlan() {
-  const router = useRouter();
+  const router = useRouter()
   return (
     <ProgressSteps
       activeStepIconBorderColor={primary}
@@ -44,7 +44,9 @@ export default function LessonPlan() {
       <ProgressStep
         label="Activities"
         onPrevious={() => {}}
-        onSubmit={() => {router.replace(`/(lesson)/creating_lesson`)}}
+        onSubmit={() => {
+          router.replace(`/(lesson)/creating_lesson`)
+        }}
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
         <View style={containerStyles.container}>

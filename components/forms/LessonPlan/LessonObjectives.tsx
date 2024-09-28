@@ -38,11 +38,11 @@ export default function LessonObjectives() {
         setTextValue={textValue}
       />
       <View style={styles.lessonObjectivesList}>
-      <LessonObjectivesList
-        lessonObjectives={lessonObjectives}
-        onEdit={handleEditObjective}
-        onDelete={handleDeleteObjective}
-      />
+        <LessonObjectivesList
+          lessonObjectives={lessonObjectives}
+          onEdit={handleEditObjective}
+          onDelete={handleDeleteObjective}
+        />
       </View>
     </View>
   )
@@ -51,5 +51,5 @@ export default function LessonObjectives() {
 const styles = StyleSheet.create({
   lessonObjectivesList: {
     marginTop: 20,
-  }
+  },
 })

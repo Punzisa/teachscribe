@@ -18,14 +18,18 @@ interface Option {
 interface ClassroomDropdownProps {
   options: Option[]
   placeholder: string
-  onSelect: (value: string) => void;
+  onSelect: (value: string) => void
   style?: StyleProp<ViewStyle>
 }
 
-const ClassroomDropdown: React.FC<ClassroomDropdownProps> = ({ options, placeholder, onSelect, style }) => {
+const ClassroomDropdown: React.FC<ClassroomDropdownProps> = ({
+  options,
+  placeholder,
+  onSelect,
+  style,
+}) => {
   const [isVisible, setIsVisible] = useState(false)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
-
 
   const toggleDropdown = () => {
     setIsVisible(!isVisible)
@@ -33,7 +37,7 @@ const ClassroomDropdown: React.FC<ClassroomDropdownProps> = ({ options, placehol
 
   const selectOption = (option: string) => {
     setSelectedOption(option)
-    onSelect(option);
+    onSelect(option)
     setIsVisible(false)
   }
 
