@@ -1,21 +1,23 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { useRouter } from 'expo-router'
-import CustomDropdown from './CustomDropdown'
+import ClassroomDropdown from './ClassroomDropdown'
 import { Colors } from '@/constants/Colors'
+import { dataChangeSubject, loadList, removeFromList } from '@/context/storage'
 
-interface lesson {
+export interface Lesson {
   id: string
   title: string
+  subject: string
   description: string
   activity: string
+  classroom: string
 }
 
 interface LessonProps {
-  lesson: lesson
+  lesson: Lesson
 }
 
 const Lesson: React.FC<LessonProps> = ({ lesson }) => {
@@ -31,8 +33,15 @@ const Lesson: React.FC<LessonProps> = ({ lesson }) => {
     { id: '2', title: 'Export' },
     { id: '3', title: 'Copy' },
     { id: '4', title: 'View' },
-    { id: '5', title: 'Submit' },
+    { id: '5', title: 'Delete' },
+    { id: '6', title: 'Submit' },
   ]
+
+  const handlePress = (button: string) => {
+    if (button === 'Delete') {
+      removeFromList('lessons', lesson.id)
+    }
+  }
 
   return (
     <View style={styles.lessonContainer}>
@@ -50,7 +59,7 @@ const Lesson: React.FC<LessonProps> = ({ lesson }) => {
         <View>
           <View style={styles.lessonButtons}>
             {buttons.map((item) => (
-              <TouchableOpacity key={item.id}>
+              <TouchableOpacity key={item.id} onPress={() => handlePress(item.title)}>
                 <Text style={styles.lessonButtonText}>{item.title}</Text>
               </TouchableOpacity>
             ))}
@@ -65,6 +74,7 @@ const Lesson: React.FC<LessonProps> = ({ lesson }) => {
     </View>
   )
 }
+
 export default function LessonPlans() {
   const options = [
     { id: '1', label: '12-4' },
@@ -73,44 +83,62 @@ export default function LessonPlans() {
     { id: '4', label: '10-3' },
   ]
 
-  const lessons = [
-    {
-      id: '1',
-      title: 'Waves as Energy',
-      description: 'Description for Lesson 1',
-      activity: 'Activity for Lesson 1',
-    },
-    {
-      id: '2',
-      title: 'Matter',
-      description: 'Description for Lesson 2',
-      activity: 'Activity for Lesson 2',
-    },
-    {
-      id: '3',
-      title: 'Physical Quantities',
-      description: 'Description for Lesson 3',
-      activity: 'Activity for Lesson 3',
-    },
-    {
-      id: '4',
-      title: 'Radioactivity',
-      description: 'Description for Lesson 4',
-      activity: 'Activity for Lesson 4',
-    },
-  ]
+  const [lessons, setLessons] = useState<Lesson[] | null>(null)
+  const [selectedClassroom, setSelectedClassroom] = useState<string>('')
+  const [classroomOptions, setClassroomOptions] = useState<{ id: string; label: string }[]>([])
+
+  const handleClassroomSelect = (value: string) => {
+    setSelectedClassroom(value)
+  }
+
+  const getData = async () => {
+    const loadedData = await loadList<Lesson>('lessons')
+    setLessons(loadedData)
+
+    // Generate classroom options from loaded data
+    const uniqueClassrooms = Array.from(new Set(loadedData?.map((lesson) => lesson.classroom)))
+    const newOptions = uniqueClassrooms.map((classroom, index) => ({
+      id: (index + 1).toString(),
+      label: classroom,
+    }))
+    setClassroomOptions(newOptions)
+  }
+
+  useEffect(() => {
+    getData()
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'lessons') {
+        getData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const filteredLessons = lessons?.filter(
+    (lesson) => selectedClassroom === '' || lesson.classroom === selectedClassroom
+  )
 
   return (
     <ScrollView style={styles.container}>
       <View>
         <Text style={styles.sectionTitle}>Classroom</Text>
-        <CustomDropdown options={options} placeholder="Select Classroom" />
+        <ClassroomDropdown
+          options={classroomOptions}
+          onSelect={handleClassroomSelect}
+          placeholder="Select Classroom"
+        />
       </View>
       <View style={styles.lessons}>
         <Text style={styles.sectionTitle}>Lessons</Text>
-        {lessons.map((lesson) => (
-          <Lesson key={lesson.id} lesson={lesson} />
-        ))}
+        {selectedClassroom &&
+          filteredLessons &&
+          filteredLessons.map((lesson) => <Lesson key={lesson.id} lesson={lesson} />)}
+        {!selectedClassroom && (
+          <View style={styles.selectClassroom}>
+            <Text style={styles.selectClassroomText}>Classroom not selected</Text>
+          </View>
+        )}
       </View>
     </ScrollView>
   )
@@ -125,7 +153,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
 
-  classroom: {},
+  selectClassroom: {
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  selectClassroomText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
   lessons: {
     gap: 10,
   },

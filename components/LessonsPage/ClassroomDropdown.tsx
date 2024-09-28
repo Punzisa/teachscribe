@@ -15,15 +15,17 @@ interface Option {
   label: string
 }
 
-interface CustomDropdownProps {
+interface ClassroomDropdownProps {
   options: Option[]
   placeholder: string
+  onSelect: (value: string) => void;
   style?: StyleProp<ViewStyle>
 }
 
-const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, placeholder, style }) => {
+const ClassroomDropdown: React.FC<ClassroomDropdownProps> = ({ options, placeholder, onSelect, style }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
+
 
   const toggleDropdown = () => {
     setIsVisible(!isVisible)
@@ -31,6 +33,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ options, placeholder, s
 
   const selectOption = (option: string) => {
     setSelectedOption(option)
+    onSelect(option);
     setIsVisible(false)
   }
 
@@ -119,4 +122,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CustomDropdown
+export default ClassroomDropdown
