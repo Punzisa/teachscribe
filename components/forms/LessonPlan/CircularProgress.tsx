@@ -25,10 +25,13 @@ const CircularProgress: React.FC = () => {
     }).start(() => {
       setShowCheckmark(true)
       setTimeout(() => {
-        router.replace('/(tabs)')
+        router.replace({
+          pathname: '/(tabs)',
+          params: { reload: '0' },
+        })
       }, 1000)
     })
-  }, [progress])
+  })
 
   const strokeDashoffset = progress.interpolate({
     inputRange: [0, 1],
@@ -71,7 +74,6 @@ const CircularProgress: React.FC = () => {
   )
 }
 
-// Create an Animated Circle component
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
 export default CircularProgress
