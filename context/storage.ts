@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Subject } from 'rxjs'
-import { Lesson } from '@/components/LessonsPage/lessonPlans'
+import { lessons } from './data'
 
 const dataChangeSubject = new Subject<string>()
 
@@ -66,68 +65,33 @@ const removeFromList = async <T extends { id: string }>(key: string, id: string)
   }
 }
 
+type WithId = { id: string }
+
+const addNewItem = async <T extends WithId>(key: string, newItem: T): Promise<void> => {
+  try {
+    const existingItems = await loadList<T>(key)
+    const newId = Date.now().toString()
+    newItem.id = newId
+
+    let updatedItems: T[]
+
+    if (existingItems) {
+      updatedItems = [...existingItems, newItem]
+    } else {
+      updatedItems = [newItem]
+    }
+
+    await saveList(key, updatedItems)
+    console.log(`New item added to ${key}:`, newItem)
+    dataChangeSubject.next(key)
+  } catch (error) {
+    console.error(`Error adding new item to ${key}:`, error)
+  }
+}
+
 const initialiseData = () => {
   saveList('lessons', lessons)
 }
-
-const lessons: Lesson[] = [
-  {
-    id: '1',
-    title: 'Waves as Energy',
-    description: 'An introduction to waves and their role in energy transfer.',
-    activity: 'Wave simulation experiment',
-    classroom: '10-3',
-    subject: 'Physics',
-  },
-  {
-    id: '2',
-    title: 'Matter and Its Properties',
-    description: 'Exploring the fundamental properties of matter.',
-    activity: 'States of matter demonstration',
-    classroom: '10-3',
-    subject: 'Physics',
-  },
-  {
-    id: '3',
-    title: 'Physical Quantities and Measurement',
-    description: 'Understanding physical quantities and their measurement.',
-    activity: 'Precision measurement lab',
-    classroom: '11-6',
-    subject: 'Physics',
-  },
-  {
-    id: '4',
-    title: 'Introduction to Radioactivity',
-    description: 'Basic concepts of radioactivity and nuclear physics.',
-    activity: 'Geiger counter demonstration',
-    classroom: '12-4',
-    subject: 'Physics',
-  },
-  {
-    id: '5',
-    title: 'Forces and Motion',
-    description: "Newton's laws and their applications.",
-    activity: 'Force and acceleration experiment',
-    classroom: '11-6',
-    subject: 'Physics',
-  },
-  {
-    id: '6',
-    title: 'Electricity Basics',
-    description: "Introduction to electric circuits and Ohm's law.",
-    activity: 'Simple circuit building',
-    classroom: '10-3',
-    subject: 'Physics',
-  },
-  {
-    id: '7',
-    title: 'Light and Optics',
-    description: 'Properties of light and optical phenomena.',
-    activity: 'Refraction and reflection experiments',
-    classroom: '12-4',
-    subject: 'Physics',
-  },
-]
 
 export {
   initialiseData,
@@ -137,4 +101,5 @@ export {
   loadList,
   removeData,
   removeFromList,
+  addNewItem,
 }
