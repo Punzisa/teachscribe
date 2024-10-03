@@ -3,43 +3,42 @@ import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import ClassroomDropdown from './ClassroomDropdown'
+import ClassDropdown from './ClassDropdown'
 import { Colors } from '@/constants/Colors'
 import { dataChangeSubject, loadList, removeFromList } from '@/context/storage'
-
-export interface Lesson {
-  id: string
-  title: string
-  subject: string
-  description: string
-  activity: string
-  classroom: string
-}
+import { LessonData } from '../forms/LessonPlan/LessonPlan'
+import { useRouter } from 'expo-router'
 
 interface LessonProps {
-  lesson: Lesson
+  lesson: LessonData
 }
 
-const Lesson: React.FC<LessonProps> = ({ lesson }) => {
+const Lessons: React.FC<LessonProps> = ({ lesson }) => {
   const colorScheme = useColorScheme()
   const [showDropdown, setShowDropdown] = useState(false)
-
+  const router = useRouter()
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown)
   }
 
   const buttons = [
-    { id: '1', title: 'Edit' },
+    // { id: '1', title: 'Edit' },
     { id: '2', title: 'Export' },
-    { id: '3', title: 'Copy' },
+    // { id: '3', title: 'Copy' },
     { id: '4', title: 'View' },
     { id: '5', title: 'Delete' },
-    { id: '6', title: 'Submit' },
+    // { id: '6', title: 'Submit' },
   ]
 
   const handlePress = (button: string) => {
     if (button === 'Delete') {
       removeFromList('lessons', lesson.id)
+    }
+    if (button === 'View') {
+      router.push({
+        pathname: '/(lesson)/view_lesson',
+        params: { lesson: JSON.stringify(lesson) },
+      })
     }
   }
 
@@ -67,8 +66,8 @@ const Lesson: React.FC<LessonProps> = ({ lesson }) => {
           <Text style={styles.lessonSubTitles}>Description</Text>
           <Text>{lesson.description}</Text>
           <View style={{ height: 10 }} />
-          <Text style={styles.lessonSubTitles}>Activity</Text>
-          <Text>{lesson.activity}</Text>
+          <Text style={styles.lessonSubTitles}>Teaching Activity</Text>
+          <Text>{lesson.activities.teachingActivities}</Text>
         </View>
       )}
     </View>
@@ -76,32 +75,25 @@ const Lesson: React.FC<LessonProps> = ({ lesson }) => {
 }
 
 export default function LessonPlans() {
-  const options = [
-    { id: '1', label: '12-4' },
-    { id: '2', label: '12-6' },
-    { id: '3', label: '11-6' },
-    { id: '4', label: '10-3' },
-  ]
+  const [lessons, setLessons] = useState<LessonData[] | null>(null)
+  const [selectedClass, setSelectedClass] = useState<string>('')
+  const [classOptions, setClassOptions] = useState<{ id: string; label: string }[]>([])
 
-  const [lessons, setLessons] = useState<Lesson[] | null>(null)
-  const [selectedClassroom, setSelectedClassroom] = useState<string>('')
-  const [classroomOptions, setClassroomOptions] = useState<{ id: string; label: string }[]>([])
-
-  const handleClassroomSelect = (value: string) => {
-    setSelectedClassroom(value)
+  const handleClassSelect = (value: string) => {
+    setSelectedClass(value)
   }
 
   const getData = async () => {
-    const loadedData = await loadList<Lesson>('lessons')
+    const loadedData = await loadList<LessonData>('lessons')
     setLessons(loadedData)
 
     // Generate classroom options from loaded data
-    const uniqueClassrooms = Array.from(new Set(loadedData?.map((lesson) => lesson.classroom)))
-    const newOptions = uniqueClassrooms.map((classroom, index) => ({
+    const uniqueClasses = Array.from(new Set(loadedData?.map((lesson) => lesson.class)))
+    const newOptions = uniqueClasses.map((classroom, index) => ({
       id: (index + 1).toString(),
       label: classroom,
     }))
-    setClassroomOptions(newOptions)
+    setClassOptions(newOptions)
   }
 
   useEffect(() => {
@@ -116,27 +108,27 @@ export default function LessonPlans() {
   }, [])
 
   const filteredLessons = lessons?.filter(
-    (lesson) => selectedClassroom === '' || lesson.classroom === selectedClassroom
+    (lesson) => selectedClass === '' || lesson.class === selectedClass
   )
 
   return (
     <ScrollView style={styles.container}>
       <View>
-        <Text style={styles.sectionTitle}>Classroom</Text>
-        <ClassroomDropdown
-          options={classroomOptions}
-          onSelect={handleClassroomSelect}
-          placeholder="Select Classroom"
+        <Text style={styles.sectionTitle}>Class</Text>
+        <ClassDropdown
+          options={classOptions}
+          onSelect={handleClassSelect}
+          placeholder="Select Class"
         />
       </View>
       <View style={styles.lessons}>
         <Text style={styles.sectionTitle}>Lessons</Text>
-        {selectedClassroom &&
+        {selectedClass &&
           filteredLessons &&
-          filteredLessons.map((lesson) => <Lesson key={lesson.id} lesson={lesson} />)}
-        {!selectedClassroom && (
-          <View style={styles.selectClassroom}>
-            <Text style={styles.selectClassroomText}>Classroom not selected</Text>
+          filteredLessons.map((lesson) => <Lessons key={lesson.id} lesson={lesson} />)}
+        {!selectedClass && (
+          <View style={styles.selectClass}>
+            <Text style={styles.selectClassText}>Class not selected</Text>
           </View>
         )}
       </View>
@@ -153,11 +145,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
 
-  selectClassroom: {
+  selectClass: {
     backgroundColor: 'white',
     padding: 20,
   },
-  selectClassroomText: {
+  selectClassText: {
     fontSize: 16,
     textAlign: 'center',
   },

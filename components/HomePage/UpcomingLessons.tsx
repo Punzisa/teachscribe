@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Animated } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
@@ -64,8 +64,6 @@ const LessonCard: React.FC<{ item: Lesson }> = ({ item }) => {
       start={{ x: 0.2, y: 0 }}
       end={{ x: 0.7, y: 0.8 }}
       style={styles.card}>
-      {/* <View style={styles.card}> */}
-
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
           <Text style={styles.cardTitle}>{item.title}</Text>

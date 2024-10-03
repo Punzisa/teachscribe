@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { View, StyleSheet, Alert } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 
 import TextInputField from '@/components/forms/LessonPlan/TextInputField'
+import { LessonData } from './LessonPlan'
 
 type Activities = {
   teachingAids: string
@@ -9,32 +9,38 @@ type Activities = {
   pupilActivities: string
 }
 
-export default function Activities() {
-  const [activities, setActivities] = useState<Activities>({
-    teachingAids: '',
-    teachingActivities: '',
-    pupilActivities: '',
-  })
-
-  const handleChange = (key: keyof Activities, value: string) => {
-    setActivities((prevActivities) => ({
-      ...prevActivities,
-      [key]: value,
-    }))
+export type ActivitiesType = {
+  teachingAids: string
+  teachingActivities: string
+  pupilActivities: string
+}
+interface ActivitiesProps {
+  lessonData: {
+    activities: ActivitiesType
   }
+  updateLessonData: (newData: Partial<LessonData>) => void
+}
 
-  useEffect(() => {
-    console.log('activities:', activities)
-  }, [activities])
+const Activities: React.FC<ActivitiesProps> = ({ lessonData, updateLessonData }) => {
+  const handleChange = (key: keyof Activities, value: string) => {
+    updateLessonData({
+      activities: {
+        ...lessonData.activities,
+        [key]: value,
+      },
+    })
+  }
 
   return (
     <View style={styles.container}>
       <TextInputField
+        setTextValue={lessonData.activities.teachingAids}
         placeholder={'Teaching Aids'}
         onInputChange={(teachingAids: string) => handleChange('teachingAids', teachingAids)}
         multiline
       />
       <TextInputField
+        setTextValue={lessonData.activities.teachingActivities}
         placeholder={'Teaching Activities'}
         onInputChange={(teachingActivities: string) =>
           handleChange('teachingActivities', teachingActivities)
@@ -42,6 +48,7 @@ export default function Activities() {
         multiline
       />
       <TextInputField
+        setTextValue={lessonData.activities.pupilActivities}
         placeholder={'Pupil Activities'}
         onInputChange={(pupilActivities: string) =>
           handleChange('pupilActivities', pupilActivities)
@@ -51,6 +58,8 @@ export default function Activities() {
     </View>
   )
 }
+
+export default Activities
 
 const styles = StyleSheet.create({
   container: {
