@@ -1,9 +1,6 @@
 import React from 'react'
-import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import CardButton from './CardButton'
-
-const { width } = Dimensions.get('screen')
-const cardWidth = width / 2 - 20 - 5 // Adjust size as needed
 
 const GetStarted = () => {
   const data = [
@@ -18,21 +15,16 @@ const GetStarted = () => {
     { id: '4', text: 'How Tools', route: '/route4', colors: ['#F33E62', '#F79334'] },
   ]
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <CardButton text={item.text} route={item.route} colors={item.colors} />
-    </View>
-  )
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Get Started</Text>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-      />
+      <View style={styles.gridContainer}>
+        {data.map((item) => (
+          <View key={item.id} style={styles.gridItem}>
+            <CardButton text={item.text} route={item.route} colors={item.colors} />
+          </View>
+        ))}
+      </View>
     </View>
   )
 }
@@ -51,10 +43,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  card: {
-    width: cardWidth,
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: '48%',
     height: 60,
-    margin: 5, // Space between cards
+    marginBottom: 16,
   },
 })
 
