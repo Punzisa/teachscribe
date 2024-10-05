@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     width: '48%',
-    height: 60,
+    height: 80,
     marginBottom: 16,
   },
 })

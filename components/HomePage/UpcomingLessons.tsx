@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
+import { Colors } from '@/constants/Colors'
+import { LessonData } from '../forms/LessonPlan/LessonPlan'
+import { dataChangeSubject, loadList } from '@/context/storage'
 
 interface Lesson {
   id: string
@@ -42,7 +45,7 @@ const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => 
   )
 }
 
-const LessonCard: React.FC<{ item: Lesson }> = ({ item }) => {
+const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [heightAnimation] = useState(new Animated.Value(0))
   const router = useRouter()
@@ -60,15 +63,15 @@ const LessonCard: React.FC<{ item: Lesson }> = ({ item }) => {
 
   return (
     <LinearGradient
-      colors={['#fffffc', '#e8e8e8']}
-      start={{ x: 0.2, y: 0 }}
-      end={{ x: 0.7, y: 0.8 }}
+      colors={['#fffffc', '#c7c7c7']}
+      start={{ x: 0.5, y: 0.6 }}
+      end={{ x: 0.9, y: 0.9 }}
       style={styles.card}>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
-          <Text style={styles.cardTitle}>{item.title}</Text>
+          <Text style={styles.cardTitle}>{lesson.title}</Text>
           <Text style={styles.cardSubtitle}>
-            {item.grade} - {item.subject}
+            {lesson.class}
           </Text>
         </View>
         <TouchableOpacity onPress={toggleDropdown}>
@@ -79,25 +82,45 @@ const LessonCard: React.FC<{ item: Lesson }> = ({ item }) => {
         <View style={{ display: 'flex', flexDirection: 'row', gap: 10 }}>
           <DropDownButton title="Edit" onPress={() => alert('Edit')} />
           <DropDownButton
-            title="View Lesson"
-            onPress={() => router.push(`/(lesson)/view_lesson`)}
+            title="View"
+            onPress={() => router.push({
+              pathname: '/(lesson)/view_lesson',
+              params: { lesson: JSON.stringify(lesson) },
+            })}
           />
-          <DropDownButton title="Submit" onPress={() => alert('Submit lesson')} />
+          {/* <DropDownButton title="Submit" onPress={() => alert('Submit lesson')} /> */}
         </View>
-        <Text>Status: {item.approvalStatus}</Text>
-        <Text>Feedback: {item.feedback}</Text>
+        <Text>Description: {lesson.description}</Text>
+        <Text>Teaching Activites: {lesson.activities.teachingActivities}</Text>
       </Animated.View>
-      {/* </View> */}
     </LinearGradient>
   )
 }
 
 const UpcomingLessons = () => {
+  const [lessons, setLessons] = useState<LessonData[] | null>(null)
+
+  const getData = async () => {
+    const loadedData = await loadList<LessonData>('lessons')
+    setLessons(loadedData)
+  }
+  useEffect(() => {
+    getData()
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'lessons') {
+        getData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const topTwoLessons = lessons?.slice(0,2)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming Lessons</Text>
-      {dummyData.map((item) => (
-        <LessonCard key={item.id} item={item} />
+      {topTwoLessons !== undefined && topTwoLessons.map((item) => (
+        <LessonCard key={item.id} lesson={item} />
       ))}
     </View>
   )
@@ -105,9 +128,9 @@ const UpcomingLessons = () => {
 
 const styles = StyleSheet.create({
   buttonTitle: {
-    color: '#007bff',
-    fontSize: 14,
-    fontWeight: 'normal',
+    color: Colors.primary,
+    fontSize: 16,
+    marginBottom: 5,
   },
   container: {
     padding: 16,
@@ -130,11 +153,11 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: 'medium',
+    fontWeight: '500',
   },
   cardSubtitle: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
+    color: '#444',
   },
   dropdown: {
     marginTop: 8,
