@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { TimerPickerModal } from 'react-native-timer-picker'
 import * as Haptics from 'expo-haptics'
@@ -30,28 +30,61 @@ export const formatTime = ({
   return timeParts.join(':')
 }
 
-export default function TimeDuration() {
+function convertTimeDurationToHoursAndMinutes(timeDurationString: string): string {
+  const [hours, minutes, seconds] = timeDurationString.split(':').map(Number)
+
+  if (hours === 0 && minutes === 0 && seconds === 0) {
+    return ''
+  }
+  if (hours === 0) {
+    return `${minutes} minutes`
+  } else if (hours === 1) {
+    return `${hours} hour ${minutes} minutes`
+  } else {
+    return `${hours} hours ${minutes} minutes`
+  }
+}
+
+type Props = {
+  onInputChange?: (value: string) => void
+  setTextValue?: string
+}
+
+const TimeDuration = ({ onInputChange, setTextValue }: Props) => {
   const [showPicker, setShowPicker] = useState(false)
-  const [timeDurationString, setTimeDurationString] = useState<string | null>(null)
+  const [text, setText] = useState('')
+
+  const handleConfirm = (value: string) => {
+    if (onInputChange !== undefined && onInputChange !== null) {
+      onInputChange(value)
+    }
+  }
+
+  useEffect(() => {
+    if (setTextValue !== undefined) {
+      setText(setTextValue)
+    }
+  }, [setTextValue])
 
   return (
     <>
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center', backgroundColor: 'white' }}>
         <Button
           outline
           outlineColor={lightGrey}
-          label={timeDurationString === null ? 'Lesson Duration' : ''}
+          label={text === '' ? 'Lesson Duration' : ''}
           borderRadius={7}
           style={{ height: 50, width: '100%', justifyContent: 'flex-start' }}
           onPress={() => setShowPicker(true)}>
-          {timeDurationString !== null ? <Text>{timeDurationString}</Text> : <Text />}
+          {text !== '' ? <Text>{text}</Text> : <Text />}
         </Button>
       </View>
       <TimerPickerModal
         visible={showPicker}
         setIsVisible={setShowPicker}
         onConfirm={(pickedDuration) => {
-          setTimeDurationString(formatTime(pickedDuration))
+          const formattedTime = formatTime(pickedDuration)
+          handleConfirm(convertTimeDurationToHoursAndMinutes(formattedTime))
           setShowPicker(false)
         }}
         modalTitle="Lesson Duration"
@@ -65,3 +98,5 @@ export default function TimeDuration() {
     </>
   )
 }
+
+export default TimeDuration

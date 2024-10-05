@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps'
 
 import {
@@ -9,8 +9,48 @@ import {
 import { primary } from '@/constants/Colors'
 import LessonDetails from '@/components/forms/LessonPlan/LessonDetails'
 import LessonObjectives from '@/components/forms/LessonPlan/LessonObjectives'
+import Activities, { ActivitiesType } from './Activities'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { addNewItem } from '@/context/storage'
+
+export interface LessonData {
+  id: string
+  title: string
+  description: string
+  duration: string
+  subject: string
+  class: string
+  objectives: string[]
+  activities: ActivitiesType
+}
 
 export default function LessonPlan() {
+  const router = useRouter()
+  const [lessonData, setLessonData] = useState<LessonData>({
+    id: '',
+    title: '',
+    description: '',
+    duration: '',
+    subject: '',
+    class: '',
+    objectives: [],
+    activities: {
+      teachingAids: '',
+      teachingActivities: '',
+      pupilActivities: '',
+    },
+  })
+
+  const updateLessonData = (newData: Partial<LessonData>) => {
+    setLessonData((prevData) => ({ ...prevData, ...newData }))
+  }
+
+  const handleSubmit = () => {
+    console.log('Submitting lesson data:', lessonData)
+    addNewItem('lessons', lessonData)
+    router.push(`/(lesson)/creating_lesson`)
+  }
   return (
     <ProgressSteps
       activeStepIconBorderColor={primary}
@@ -25,7 +65,7 @@ export default function LessonPlan() {
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
         <View style={containerStyles.container}>
-          <LessonDetails />
+          <LessonDetails lessonData={lessonData} updateLessonData={updateLessonData} />
         </View>
       </ProgressStep>
       <ProgressStep
@@ -35,17 +75,17 @@ export default function LessonPlan() {
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
         <View style={containerStyles.container}>
-          <LessonObjectives />
+          <LessonObjectives lessonData={lessonData} updateLessonData={updateLessonData} />
         </View>
       </ProgressStep>
       <ProgressStep
         label="Activities"
         onPrevious={() => {}}
-        onSubmit={() => {}}
+        onSubmit={handleSubmit}
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
-        <View style={{ alignItems: 'center' }}>
-          <Text>Activities</Text>
+        <View style={containerStyles.container}>
+          <Activities lessonData={lessonData} updateLessonData={updateLessonData} />
         </View>
       </ProgressStep>
     </ProgressSteps>

@@ -3,7 +3,8 @@ import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { View } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { LessonData } from './forms/LessonPlan/LessonPlan'
 
 interface LessonView {
   lessonName: string
@@ -34,65 +35,57 @@ const lessonData: LessonView = {
 }
 
 export default function ViewLesson() {
+  const params = useLocalSearchParams<{ lesson: string }>()
+  const lesson: LessonData = params.lesson ? JSON.parse(params.lesson) : null
+
   const colorScheme = useColorScheme()
   const router = useRouter()
 
   const closeButtonPressed = () => {
-    router.replace('/(tabs)/')
+    router.back()
+  }
+
+  const formatActivitesKey = (key: string): string => {
+    return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
   }
   return (
-    <ScrollView className="mt-10 min-h-screen flex-1">
-      <View style={styles.container} className="">
-        <View className="mb-2 flex flex-row justify-between items-center">
-          <View className="flex flex-row items-center justify-between gap-6">
-            <View style={styles.titleContainer}>
-              <Text>Summary</Text>
-            </View>
-            <View
-              className={` ${colorScheme === 'light' ? 'bg-green-400 text-yellow-800' : 'bg-green-600'}  rounded-lg  p-1.5`}>
-              <Text className="">{lessonData.status}</Text>
-            </View>
-          </View>
-          <TouchableOpacity onPress={closeButtonPressed}>
-            <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
-          </TouchableOpacity>
-        </View>
-        <View className="mb-4">
-          <View className="flex flex-row gap-2">
-            <Text>Lesson Name:</Text>
-            <Text>{lessonData.lessonName}</Text>
-          </View>
-          <View className="flex flex-row gap-4">
-            <Text>School Name:</Text>
-            <Text>{lessonData.schoolName}</Text>
-          </View>
-          <View className="flex flex-row gap-4">
-            <Text>Teacher Name:</Text>
-            <Text>{lessonData.teacherName}</Text>
-          </View>
-          <View className="flex flex-row gap-4">
-            <Text>Date:</Text>
-            <Text>{lessonData.date.toDateString()}</Text>
-          </View>
-        </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.titleAndButton}>
+        <Text style={styles.title}>{lesson.title}</Text>
+        <TouchableOpacity onPress={closeButtonPressed}>
+          <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.subtitle}>Subject: {lesson.subject}</Text>
+      <Text style={styles.subtitle}>Classroom: {lesson.class}</Text>
+      <Text style={styles.subtitle}>Teacher Name: {lessonData.teacherName}</Text>
+      <Text style={styles.subtitle}>Date: {lessonData.date.toDateString()}</Text>
+      <Text style={styles.subtitle}>Duration: {lesson.duration}</Text>
 
-        <View className="mb-16 flex flex-col gap-2">
-          <Text>Lesson Objectives</Text>
-          <Text>{lessonData.lessonObjectives}</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Description</Text>
+        <Text>{lesson.description}</Text>
+      </View>
 
-          <Text>Teaching Aids</Text>
-          <Text>{lessonData.teachingAids}</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Objectives</Text>
+        {lesson.objectives.map((objective, index) => (
+          <Text key={index}>• {objective}</Text>
+        ))}
+      </View>
 
-          <Text>Teaching Activities</Text>
-          <Text>{lessonData.teachingActivities}</Text>
-
-          <Text>Pupil's Activities</Text>
-          <Text>{lessonData.pupilActivities}</Text>
-        </View>
-        <View className="flex flex-row gap-4">
-          <Text>Teacher's Signature:</Text>
-          <Text>{lessonData.teachersSignature}</Text>
-        </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Activities</Text>
+        {Object.entries(lesson.activities).map(([key, value]) => (
+          <View key={key} style={styles.activity}>
+            <Text style={styles.activityTitle}>{formatActivitesKey(key)}:</Text>
+            <Text>{value}</Text>
+          </View>
+        ))}
+      </View>
+      <View style={styles.teachersSignature}>
+        <Text>Teacher's Signature:</Text>
+        <Text>{lessonData.teachersSignature}</Text>
       </View>
     </ScrollView>
   )
@@ -100,17 +93,58 @@ export default function ViewLesson() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingHorizontal: 30,
     paddingTop: 20,
     paddingBottom: 100,
-    minHeight: '100%',
   },
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
   },
   titles: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  titleAndButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 4,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  section: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  activityType: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  activity: {
+    marginBottom: 8,
+  },
+  activityTitle: {
+    fontWeight: 'bold',
+  },
+  teachersSignature: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 16,
+    fontSize: 16,
   },
 })
