@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import TextInputField from '@/components/forms/LessonPlan/TextInputField'
 import TimeDuration from '@/components/TimePicker/TimeDuration'
 import { LessonData } from './LessonPlan'
+import DateTime from '@/components/DateTimePicker/DateTime'
 
 interface LessonDetailsProps {
   lessonData: LessonData
@@ -9,7 +10,7 @@ interface LessonDetailsProps {
 }
 const LessonDetails: React.FC<LessonDetailsProps> = ({ lessonData, updateLessonData }) => {
   return (
-    <View style={{ gap: 27 }}>
+    <View style={{ gap: 20 }}>
       <TextInputField
         setTextValue={lessonData.title}
         onInputChange={(text: string) => updateLessonData({ title: text })}
@@ -28,6 +29,10 @@ const LessonDetails: React.FC<LessonDetailsProps> = ({ lessonData, updateLessonD
       <TimeDuration
         setTextValue={lessonData.duration}
         onInputChange={(text: string) => updateLessonData({ duration: text })}
+      />
+      <DateTime
+        setDateValue={lessonData.date}
+        onInputChange={(date: Date) => updateLessonData({ date: date })}
       />
     </View>
   )
