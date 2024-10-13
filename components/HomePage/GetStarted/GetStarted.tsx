@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
   },
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 16,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     width: '48%',
-    height: 60,
+    height: 80,
     marginBottom: 16,
   },
 })

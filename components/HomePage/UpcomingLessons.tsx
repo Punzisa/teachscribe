@@ -1,36 +1,12 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
-
-interface Lesson {
-  id: string
-  title: string
-  grade: string
-  subject: string
-  approvalStatus: string
-  feedback: string
-}
-
-const dummyData: Lesson[] = [
-  {
-    id: '1',
-    title: 'Math Lesson 1',
-    grade: 'Grade 5',
-    subject: 'Mathematics',
-    approvalStatus: 'Approved',
-    feedback: 'Great progress!',
-  },
-  {
-    id: '2',
-    title: 'Science Lesson 2',
-    grade: 'Grade 6',
-    subject: 'Science',
-    approvalStatus: 'Pending',
-    feedback: 'Needs improvement in experiments.',
-  },
-]
+import { Colors } from '@/constants/Colors'
+import { LessonData } from '../forms/LessonPlan/LessonPlan'
+import { dataChangeSubject, loadList } from '@/context/storage'
+import HorizontalButtonList from './HorizontalButtonList'
+import { generateAndSharePDF } from '../LessonsPage/lessonPlans'
 
 const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => {
   return (
@@ -42,75 +18,75 @@ const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => 
   )
 }
 
-const LessonCard: React.FC<{ item: Lesson }> = ({ item }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [heightAnimation] = useState(new Animated.Value(0))
+const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
   const router = useRouter()
-
-  const toggleDropdown = () => {
-    const toValue = isOpen ? 0 : 60
-    setIsOpen(!isOpen)
-
-    Animated.timing(heightAnimation, {
-      toValue,
-      duration: 300,
-      useNativeDriver: false,
-    }).start()
-  }
 
   return (
     <LinearGradient
-      colors={['#fffffc', '#e8e8e8']}
-      start={{ x: 0.2, y: 0 }}
-      end={{ x: 0.7, y: 0.8 }}
+      colors={['#fffffc', '#dfdfdf', '#fffffc']}
+      start={{ x: 0.3, y: 0.4 }}
+      end={{ x: 0.9, y: 0.9 }}
       style={styles.card}>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.cardSubtitle}>
-            {item.grade} - {item.subject}
-          </Text>
+          <Text style={styles.cardTitle}>{lesson.title}</Text>
+          <Text style={styles.cardSubtitle}>{lesson.class}</Text>
         </View>
-        <TouchableOpacity onPress={toggleDropdown}>
-          <Ionicons name={isOpen ? 'chevron-up' : 'chevron-down'} size={28} color={'black'} />
-        </TouchableOpacity>
-      </View>
-      <Animated.View style={[styles.dropdown, { height: heightAnimation }]}>
-        <View style={{ display: 'flex', flexDirection: 'row', gap: 10 }}>
-          <DropDownButton title="Edit" onPress={() => alert('Edit')} />
+        <View>
           <DropDownButton
-            title="View Lesson"
-            onPress={() => router.push(`/(lesson)/view_lesson`)}
+            title="View"
+            onPress={() =>
+              router.push({
+                pathname: '/(lesson)/view_lesson',
+                params: { lesson: JSON.stringify(lesson) },
+              })
+            }
           />
-          <DropDownButton title="Submit" onPress={() => alert('Submit lesson')} />
+          <DropDownButton title="Export" onPress={() => generateAndSharePDF(lesson)} />
         </View>
-        <Text>Status: {item.approvalStatus}</Text>
-        <Text>Feedback: {item.feedback}</Text>
-      </Animated.View>
-      {/* </View> */}
+      </View>
     </LinearGradient>
   )
 }
 
 const UpcomingLessons = () => {
+  const [lessons, setLessons] = useState<LessonData[] | null>(null)
+
+  const getData = async () => {
+    const loadedData = await loadList<LessonData>('lessons')
+    setLessons(loadedData)
+  }
+  useEffect(() => {
+    getData()
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'lessons') {
+        getData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const topTwoLessons = lessons?.slice(0, 2)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming Lessons</Text>
-      {dummyData.map((item) => (
-        <LessonCard key={item.id} item={item} />
-      ))}
+      <HorizontalButtonList />
+      {topTwoLessons !== undefined &&
+        topTwoLessons.map((item) => <LessonCard key={item.id} lesson={item} />)}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   buttonTitle: {
-    color: '#007bff',
-    fontSize: 14,
-    fontWeight: 'normal',
+    color: Colors.primary,
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 5,
   },
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 16,
@@ -122,19 +98,14 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 8,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    elevation: 1,
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: 'medium',
+    fontWeight: '600',
   },
   cardSubtitle: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
   },
   dropdown: {
     marginTop: 8,

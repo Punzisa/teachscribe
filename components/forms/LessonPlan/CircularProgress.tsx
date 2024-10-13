@@ -14,7 +14,6 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const CircularProgress: React.FC = () => {
   const progress = new Animated.Value(0)
   const [showCheckmark, setShowCheckmark] = useState(false)
-
   const router = useRouter()
   useEffect(() => {
     Animated.timing(progress, {
