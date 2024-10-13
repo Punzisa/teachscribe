@@ -23,6 +23,7 @@ export interface LessonData {
   class: string
   objectives: string[]
   activities: ActivitiesType
+  date?: Date
 }
 
 export default function LessonPlan() {
@@ -40,6 +41,7 @@ export default function LessonPlan() {
       teachingActivities: '',
       pupilActivities: '',
     },
+    date: new Date(),
   })
 
   const updateLessonData = (newData: Partial<LessonData>) => {
