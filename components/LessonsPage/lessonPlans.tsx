@@ -73,7 +73,7 @@ export const generateLessonHTML = (lessonData: LessonData) => {
   `
 }
 
-const generateAndSharePDF = async (lessonData: LessonData) => {
+export const generateAndSharePDF = async (lessonData: LessonData) => {
   try {
     const html = generateLessonHTML(lessonData)
     const { uri } = await Print.printToFileAsync({ html })

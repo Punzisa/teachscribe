@@ -1,39 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import { Colors } from '@/constants/Colors'
 import { LessonData } from '../forms/LessonPlan/LessonPlan'
 import { dataChangeSubject, loadList } from '@/context/storage'
-
-interface Lesson {
-  id: string
-  title: string
-  grade: string
-  subject: string
-  approvalStatus: string
-  feedback: string
-}
-
-const dummyData: Lesson[] = [
-  {
-    id: '1',
-    title: 'Math Lesson 1',
-    grade: 'Grade 5',
-    subject: 'Mathematics',
-    approvalStatus: 'Approved',
-    feedback: 'Great progress!',
-  },
-  {
-    id: '2',
-    title: 'Science Lesson 2',
-    grade: 'Grade 6',
-    subject: 'Science',
-    approvalStatus: 'Pending',
-    feedback: 'Needs improvement in experiments.',
-  },
-]
+import HorizontalButtonList from './HorizontalButtonList'
+import { generateAndSharePDF } from '../LessonsPage/lessonPlans'
 
 const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => {
   return (
@@ -46,53 +19,32 @@ const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => 
 }
 
 const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [heightAnimation] = useState(new Animated.Value(0))
   const router = useRouter()
-
-  const toggleDropdown = () => {
-    const toValue = isOpen ? 0 : 60
-    setIsOpen(!isOpen)
-
-    Animated.timing(heightAnimation, {
-      toValue,
-      duration: 300,
-      useNativeDriver: false,
-    }).start()
-  }
 
   return (
     <LinearGradient
-      colors={['#fffffc', '#c7c7c7']}
-      start={{ x: 0.5, y: 0.6 }}
+      colors={['#fffffc', '#dfdfdf', '#fffffc']}
+      start={{ x: 0.3, y: 0.4 }}
       end={{ x: 0.9, y: 0.9 }}
       style={styles.card}>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
           <Text style={styles.cardTitle}>{lesson.title}</Text>
-          <Text style={styles.cardSubtitle}>
-            {lesson.class}
-          </Text>
+          <Text style={styles.cardSubtitle}>{lesson.class}</Text>
         </View>
-        <TouchableOpacity onPress={toggleDropdown}>
-          <Ionicons name={isOpen ? 'chevron-up' : 'chevron-down'} size={28} color={'black'} />
-        </TouchableOpacity>
-      </View>
-      <Animated.View style={[styles.dropdown, { height: heightAnimation }]}>
-        <View style={{ display: 'flex', flexDirection: 'row', gap: 10 }}>
-          <DropDownButton title="Edit" onPress={() => alert('Edit')} />
+        <View>
           <DropDownButton
             title="View"
-            onPress={() => router.push({
-              pathname: '/(lesson)/view_lesson',
-              params: { lesson: JSON.stringify(lesson) },
-            })}
+            onPress={() =>
+              router.push({
+                pathname: '/(lesson)/view_lesson',
+                params: { lesson: JSON.stringify(lesson) },
+              })
+            }
           />
-          {/* <DropDownButton title="Submit" onPress={() => alert('Submit lesson')} /> */}
+          <DropDownButton title="Export" onPress={() => generateAndSharePDF(lesson)} />
         </View>
-        <Text>Description: {lesson.description}</Text>
-        <Text>Teaching Activites: {lesson.activities.teachingActivities}</Text>
-      </Animated.View>
+      </View>
     </LinearGradient>
   )
 }
@@ -115,13 +67,13 @@ const UpcomingLessons = () => {
     return () => subscription.unsubscribe()
   }, [])
 
-  const topTwoLessons = lessons?.slice(0,2)
+  const topTwoLessons = lessons?.slice(0, 2)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming Lessons</Text>
-      {topTwoLessons !== undefined && topTwoLessons.map((item) => (
-        <LessonCard key={item.id} lesson={item} />
-      ))}
+      <HorizontalButtonList />
+      {topTwoLessons !== undefined &&
+        topTwoLessons.map((item) => <LessonCard key={item.id} lesson={item} />)}
     </View>
   )
 }
@@ -130,10 +82,11 @@ const styles = StyleSheet.create({
   buttonTitle: {
     color: Colors.primary,
     fontSize: 16,
+    textAlign: 'center',
     marginBottom: 5,
   },
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 16,
@@ -145,19 +98,14 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 8,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    elevation: 1,
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   cardSubtitle: {
     fontSize: 16,
-    color: '#444',
   },
   dropdown: {
     marginTop: 8,

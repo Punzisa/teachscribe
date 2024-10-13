@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
   },
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 16,

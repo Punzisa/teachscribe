@@ -9,8 +9,7 @@ import GetStarted from '@/components/HomePage/GetStarted/GetStarted'
 import { useEffect } from 'react'
 import { initialiseData, loadData, saveData } from '@/context/storage'
 import { useLocalSearchParams } from 'expo-router'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 
 export default function HomeScreen() {
   const { signOut } = useSession()
@@ -40,7 +39,11 @@ export default function HomeScreen() {
   return (
     <SafeAreaView>
       <Greeting />
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: useBottomTabBarHeight() + bottom + 100  }}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: useBottomTabBarHeight() + bottom + 200,
+        }}>
         <GetStarted />
         <UpcomingLessons />
 
