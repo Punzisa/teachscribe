@@ -46,16 +46,6 @@ export default function HomeScreen() {
         }}>
         <GetStarted />
         <UpcomingLessons />
-
-        <View>
-          <Text
-            onPress={() => {
-              // The `app/(app)/_layout.tsx` will redirect to the sign-in screen.
-              signOut()
-            }}>
-            Sign Out
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   )

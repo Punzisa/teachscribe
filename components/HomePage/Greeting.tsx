@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { Text, StyleSheet, View, Image } from 'react-native'
 import teacherImg from '@/assets/teacher.jpg'
 import { LinearGradient } from 'expo-linear-gradient'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useRouter } from 'expo-router'
 
 const Avatar = () => {
   return (
@@ -14,7 +16,7 @@ const Avatar = () => {
 }
 const Greeting = () => {
   const [greeting, setGreeting] = useState('')
-
+  const router = useRouter()
   useEffect(() => {
     const currentHour = new Date().getHours()
     if (currentHour >= 0 && currentHour < 12) {
@@ -33,19 +35,14 @@ const Greeting = () => {
       end={{ x: 1, y: 0.9 }}
       style={styles.container}>
       <View style={styles.topSection}>
-        <Ionicons name="menu" size={30} color="white" onPress={() => console.log('open drawer')} />
-        <View style={styles.iconAndImage}>
-          <Ionicons
-            name="notifications-outline"
-            size={30}
-            color="white"
-            onPress={() => console.log('open drawer')}
-          />
-          <Avatar />
+        <View>
+          <Text style={styles.headerText}>Hello Mr. Ngongo,</Text>
+          <Text style={styles.greeting}>{greeting}</Text>
         </View>
+        <TouchableOpacity onPress={() => router.push('/(profile)/')}>
+          <Avatar />
+        </TouchableOpacity>
       </View>
-      <Text style={styles.headerText}>Hello Mr. Ngongo,</Text>
-      <Text style={styles.greeting}>{greeting}</Text>
     </LinearGradient>
   )
 }
@@ -70,15 +67,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  iconAndImage: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
   container: {
     paddingHorizontal: 10,
-    paddingVertical: 20,
+    paddingVertical: 40,
     color: 'white',
     borderRadius: 20,
     marginBottom: 20,
