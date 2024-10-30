@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import { Colors } from '@/constants/Colors'
 import { LessonData } from '../forms/LessonPlan/LessonPlan'
@@ -22,11 +21,7 @@ const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
   const router = useRouter()
 
   return (
-    <LinearGradient
-      colors={['#fffffc', '#dfdfdf', '#fffffc']}
-      start={{ x: 0.3, y: 0.4 }}
-      end={{ x: 0.9, y: 0.9 }}
-      style={styles.card}>
+    <View style={styles.card}>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
           <Text style={styles.cardTitle}>{lesson.title}</Text>
@@ -45,7 +40,7 @@ const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
           <DropDownButton title="Export" onPress={() => generateAndSharePDF(lesson)} />
         </View>
       </View>
-    </LinearGradient>
+    </View>
   )
 }
 
@@ -81,7 +76,7 @@ const UpcomingLessons = () => {
 const styles = StyleSheet.create({
   buttonTitle: {
     color: Colors.primary,
-    fontSize: 16,
+    fontSize: 13,
     textAlign: 'center',
     marginBottom: 5,
   },
