@@ -1,6 +1,5 @@
 import { ScrollView } from 'react-native'
 
-import { useSession } from '@/context/auth'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import Greeting from '@/components/HomePage/Greeting'
 import UpcomingLessons from '@/components/HomePage/UpcomingLessons'

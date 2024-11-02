@@ -43,7 +43,9 @@ const Avatar = () => {
 }
 const Greeting = () => {
   const [greeting, setGreeting] = useState('')
-  const [data, setData] = useState<ProfileGreetingData | null>(null)
+  const [salutationAndLastName, setSalutationAndLastName] = useState<ProfileGreetingData | null>(
+    null
+  )
 
   const router = useRouter()
   useEffect(() => {
@@ -79,7 +81,7 @@ const Greeting = () => {
         const profileData = await AsyncStorage.getItem('profile')
         if (profileData) {
           const parsedData: ProfileGreetingData = JSON.parse(profileData)
-          setData(parsedData)
+          setSalutationAndLastName(parsedData)
         }
       } catch (error) {
         console.error('Error loading profile data:', error)
@@ -106,7 +108,7 @@ const Greeting = () => {
       <View style={styles.topSection}>
         <View>
           <Text style={styles.headerText}>
-            Hello {data?.salutation} {data?.lastName},
+            Hello {salutationAndLastName?.salutation} {salutationAndLastName?.lastName},
           </Text>
           <Text style={styles.greeting}>{greeting}</Text>
         </View>

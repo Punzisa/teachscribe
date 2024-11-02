@@ -26,6 +26,11 @@ const LessonDetails: React.FC<LessonDetailsProps> = ({ lessonData, updateLessonD
         onInputChange={(text: string) => updateLessonData({ class: text })}
         placeholder="Class"
       />
+      <TextInputField
+        setTextValue={lessonData.subject}
+        onInputChange={(text: string) => updateLessonData({ subject: text })}
+        placeholder="Subject"
+      />
       <TimeDuration
         setTextValue={lessonData.duration}
         onInputChange={(text: string) => updateLessonData({ duration: text })}

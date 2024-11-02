@@ -23,7 +23,7 @@ export interface LessonData {
   class: string
   objectives: string[]
   activities: ActivitiesType
-  date?: Date
+  date: Date
 }
 
 export default function LessonPlan() {

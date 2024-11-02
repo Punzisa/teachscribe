@@ -9,6 +9,10 @@ export const profile: ProfileData = {
   phoneNumber: '0977977779',
 }
 
+// we need this so that upcoming lessons can have future lessons in preloaded data
+const thirtyDaysFromNow = new Date()
+thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
+
 export const lessons: LessonData[] = [
   {
     id: '1',
@@ -28,6 +32,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Lecture, Example problems on the board',
       pupilActivities: 'Solve worksheet problems, Class discussions',
     },
+    date: thirtyDaysFromNow,
   },
   {
     id: '2',
@@ -46,6 +51,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Presentation, Group discussion',
       pupilActivities: 'Analyze plant samples, Answer worksheet questions',
     },
+    date: new Date(),
   },
   {
     id: '3',
@@ -64,6 +70,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Lecture, Map analysis, Video screening',
       pupilActivities: 'Group discussion, Fill out a timeline worksheet',
     },
+    date: thirtyDaysFromNow,
   },
   {
     id: '4',
@@ -82,6 +89,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Sentence breakdown on board, Group sentence creation',
       pupilActivities: 'Work in pairs to write different sentence types',
     },
+    date: new Date(),
   },
   {
     id: '5',
@@ -100,6 +108,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Hands-on fraction practice, Example problems',
       pupilActivities: 'Solve fraction problems in pairs',
     },
+    date: new Date(),
   },
   {
     id: '6',
@@ -119,6 +128,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Interactive solar system tour, Planet facts discussion',
       pupilActivities: 'Complete a planet fact sheet',
     },
+    date: thirtyDaysFromNow,
   },
   {
     id: '7',
@@ -137,6 +147,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Lecture on organ functions, Group discussion',
       pupilActivities: 'Label digestive system parts on a diagram',
     },
+    date: new Date(),
   },
   {
     id: '8',
@@ -156,6 +167,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Live coding demonstration, Explain basic algorithms',
       pupilActivities: 'Write a simple program in groups',
     },
+    date: thirtyDaysFromNow,
   },
   {
     id: '9',
@@ -174,6 +186,7 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Hands-on activity with shapes, Problem-solving session',
       pupilActivities: 'Draw and measure angles',
     },
+    date: new Date(),
   },
   {
     id: '10',
@@ -193,5 +206,6 @@ export const lessons: LessonData[] = [
       teachingActivities: 'Lecture on the stages of the water cycle, Group discussion',
       pupilActivities: 'Draw and label the water cycle',
     },
+    date: thirtyDaysFromNow,
   },
 ]

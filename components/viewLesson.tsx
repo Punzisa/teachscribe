@@ -1,43 +1,25 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { LessonData } from './forms/LessonPlan/LessonPlan'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { dataChangeSubject } from '@/context/storage'
 
-interface LessonView {
-  lessonName: string
-  schoolName: string
-  teacherName: string
-  status: 'Approved' | 'Submitted' | 'Not yet submitted'
-  date: Date
-  lessonObjectives: string
-  teachingAids: string
-  teachingActivities: string
-  pupilActivities: string
-  teachersSignature: string
-}
-
-const lessonData: LessonView = {
-  lessonName: 'Waves as Energy',
-  schoolName: 'TeachScribe Secondary School',
-  teacherName: 'Mr. Ngongo',
-  date: new Date(),
-  status: 'Approved',
-  lessonObjectives:
-    'Students will be able to describe the properties of electromagnetic waves, identify the sources of each of the rays in the electromagnetic spectrum and describe the method of detection of each of the main components of the electromagnetic spectrum.',
-  teachingAids: 'Chart showing electromagnetic spectrum',
-  teachingActivities: 'Give notes on chapters 2-3 from textbook and then give exercises 1 to 5.',
-  pupilActivities:
-    'Students will start the lesson with a fun and interactive game where they match fraction cards to visual representations. This activity aims to familiarize students with the concept of fractions in a tangible way.',
-  teachersSignature: 'Mr. Ngongo',
+interface TeacherData {
+  salutation: string
+  firstName: string
+  lastName: string
 }
 
 export default function ViewLesson() {
   const params = useLocalSearchParams<{ lesson: string }>()
-  const lesson: LessonData = params.lesson ? JSON.parse(params.lesson) : null
-
+  const lesson: LessonData = params.lesson
+    ? { ...JSON.parse(params.lesson), date: new Date(JSON.parse(params.lesson).date) }
+    : null
+  const [teacherData, setTeacherData] = useState<TeacherData>()
   const colorScheme = useColorScheme()
   const router = useRouter()
 
@@ -48,6 +30,30 @@ export default function ViewLesson() {
   const formatActivitesKey = (key: string): string => {
     return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
   }
+
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const profileData = await AsyncStorage.getItem('profile')
+        if (profileData) {
+          const parsedData: TeacherData = JSON.parse(profileData)
+          setTeacherData(parsedData)
+        }
+      } catch (error) {
+        console.error('Error loading profile data:', error)
+      }
+    }
+
+    loadProfileData()
+
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'profile') {
+        loadProfileData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
   return (
     <ScrollView style={styles.container}>
       <View style={styles.titleAndButton}>
@@ -58,8 +64,11 @@ export default function ViewLesson() {
       </View>
       <Text style={styles.subtitle}>Subject: {lesson.subject}</Text>
       <Text style={styles.subtitle}>Classroom: {lesson.class}</Text>
-      <Text style={styles.subtitle}>Teacher Name: {lessonData.teacherName}</Text>
-      <Text style={styles.subtitle}>Date: {lessonData.date.toDateString()}</Text>
+      <Text style={styles.subtitle}>
+        Teacher Name: {teacherData?.salutation} {teacherData?.firstName} {teacherData?.lastName}
+      </Text>
+      <Text style={styles.subtitle}>Date: {lesson.date.toLocaleDateString()}</Text>
+      <Text style={styles.subtitle}>Time: {lesson.date.toLocaleTimeString()}</Text>
       <Text style={styles.subtitle}>Duration: {lesson.duration}</Text>
 
       <View style={styles.section}>
@@ -82,10 +91,6 @@ export default function ViewLesson() {
             <Text>{value}</Text>
           </View>
         ))}
-      </View>
-      <View style={styles.teachersSignature}>
-        <Text>Teacher's Signature:</Text>
-        <Text>{lessonData.teachersSignature}</Text>
       </View>
     </ScrollView>
   )
