@@ -16,20 +16,9 @@ import { Colors } from '@/constants/Colors'
 import { useSession } from '@/context/auth'
 import * as ImagePicker from 'expo-image-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { dataChangeSubject } from '@/context/storage'
-import { containerStyles } from '../forms/LessonPlan/constants'
+import { dataChangeSubject, saveData } from '@/context/storage'
 
-interface ProfileProps {
-  salutation: string
-  firstName: string
-  lastName: string
-  schoolName: string
-  phoneNumber?: string
-  avatarUrl?: string
-  onSave?: (data: ProfileData) => void
-}
-
-interface ProfileData {
+export interface ProfileData {
   salutation: string
   firstName: string
   lastName: string
@@ -37,28 +26,37 @@ interface ProfileData {
   phoneNumber: string
 }
 
-const Profile: React.FC<ProfileProps> = ({
-  salutation: initialSalutation = 'Mr.',
-  firstName: initialFirstName,
-  lastName: initialLastName,
-  schoolName: initialSchoolName,
-  phoneNumber: initialPhoneNumber = '',
-  avatarUrl = 'https://i.pravatar.cc/300?img=51',
-  onSave,
-}) => {
+const Profile = () => {
   const [imageUri, setImageUri] = useState<string | null>(null)
 
   const { signOut } = useSession()
   const [isEditing, setIsEditing] = useState(false)
-  const [salutation, setSalutation] = useState(initialSalutation) // Add this
-  const [firstName, setFirstName] = useState(initialFirstName)
-  const [lastName, setLastName] = useState(initialLastName)
-  const [schoolName, setSchoolName] = useState(initialSchoolName)
-  const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber)
+  const [salutation, setSalutation] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [schoolName, setSchoolName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
 
   const editAvatar = () => {
     console.log('Edit button pressed')
     pickImage()
+  }
+
+  const loadProfile = () => {
+    AsyncStorage.getItem('profile')
+      .then((profileString) => {
+        if (profileString) {
+          const profileData = JSON.parse(profileString)
+          setSalutation(profileData.salutation)
+          setFirstName(profileData.firstName)
+          setLastName(profileData.lastName)
+          setSchoolName(profileData.schoolName)
+          setPhoneNumber(profileData.phoneNumber)
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading profile:', error)
+      })
   }
 
   const loadSavedImage = async () => {
@@ -73,12 +71,11 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   useEffect(() => {
-    // Load saved image when component mounts
     loadSavedImage()
+    loadProfile()
   }, [])
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -102,13 +99,11 @@ const Profile: React.FC<ProfileProps> = ({
   }
 
   const handleSave = () => {
-    // Validate fields
     if (!firstName.trim() || !lastName.trim() || !schoolName.trim()) {
       Alert.alert('Error', 'Please fill in all required fields')
       return
     }
 
-    // Phone number validation (optional)
     const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4}$/
     if (phoneNumber && !phoneRegex.test(phoneNumber)) {
       Alert.alert('Error', 'Please enter a valid phone number')
@@ -122,8 +117,9 @@ const Profile: React.FC<ProfileProps> = ({
       schoolName: schoolName.trim(),
       phoneNumber: phoneNumber.trim(),
     }
+    saveData('profile', updatedData)
+    dataChangeSubject.next('profile')
 
-    onSave?.(updatedData)
     setIsEditing(false)
   }
 

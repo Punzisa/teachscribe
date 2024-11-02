@@ -7,8 +7,14 @@ import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
 
+interface ProfileGreetingData {
+  salutation: string
+  lastName: string
+}
+
 const Avatar = () => {
   const [imageUri, setImageUri] = useState<string | null>(null)
+
   useEffect(() => {
     const loadImage = async () => {
       try {
@@ -37,16 +43,58 @@ const Avatar = () => {
 }
 const Greeting = () => {
   const [greeting, setGreeting] = useState('')
+  const [data, setData] = useState<ProfileGreetingData | null>(null)
+
   const router = useRouter()
   useEffect(() => {
-    const currentHour = new Date().getHours()
-    if (currentHour >= 0 && currentHour < 12) {
-      setGreeting('good morning')
-    } else if (currentHour >= 12 && currentHour < 18) {
-      setGreeting('good afternoon')
-    } else {
-      setGreeting('good evening')
+    const updateGreeting = () => {
+      const currentHour = new Date().getHours()
+      if (currentHour >= 0 && currentHour < 12) {
+        setGreeting('good morning')
+      } else if (currentHour >= 12 && currentHour < 18) {
+        setGreeting('good afternoon')
+      } else {
+        setGreeting('good evening')
+      }
     }
+    updateGreeting()
+    const now = new Date()
+    const msUntilNextHour =
+      (60 - now.getMinutes()) * 60 * 1000 - (now.getSeconds() * 1000 + now.getMilliseconds())
+
+    const timeout = setTimeout(() => {
+      updateGreeting()
+
+      const interval = setInterval(updateGreeting, 3600000)
+
+      return () => clearInterval(interval)
+    }, msUntilNextHour)
+
+    return () => clearTimeout(timeout)
+  }, [])
+
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const profileData = await AsyncStorage.getItem('profile')
+        if (profileData) {
+          const parsedData: ProfileGreetingData = JSON.parse(profileData)
+          setData(parsedData)
+        }
+      } catch (error) {
+        console.error('Error loading profile data:', error)
+      }
+    }
+
+    loadProfileData()
+
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'profile') {
+        loadProfileData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   return (
@@ -57,7 +105,9 @@ const Greeting = () => {
       style={styles.container}>
       <View style={styles.topSection}>
         <View>
-          <Text style={styles.headerText}>Hello Mr. Ngongo,</Text>
+          <Text style={styles.headerText}>
+            Hello {data?.salutation} {data?.lastName},
+          </Text>
           <Text style={styles.greeting}>{greeting}</Text>
         </View>
         <TouchableOpacity onPress={() => router.push('/(profile)/')}>

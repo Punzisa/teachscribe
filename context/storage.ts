@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Subject } from 'rxjs'
-import { lessons } from './data'
+import { lessons, profile } from './data'
 
 const dataChangeSubject = new Subject<string>()
 
@@ -89,8 +89,14 @@ const addNewItem = async <T extends WithId>(key: string, newItem: T): Promise<vo
   }
 }
 
-const initialiseData = () => {
-  saveList('lessons', lessons)
+const initialiseData = async () => {
+  const keys = await AsyncStorage.getAllKeys()
+  const hasRequiredData = keys.includes('lessons') && keys.includes('profile')
+
+  if (!hasRequiredData) {
+    saveList('lessons', lessons)
+    saveData('profile', profile)
+  }
 }
 
 export {
