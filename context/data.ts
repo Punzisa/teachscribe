@@ -1,4 +1,13 @@
 import { LessonData } from '@/components/forms/LessonPlan/LessonPlan'
+import { ProfileData } from '@/components/ProfilePage/Profile'
+
+export const profile: ProfileData = {
+  salutation: 'Mr.',
+  firstName: 'Augustine',
+  lastName: 'Ngongo',
+  schoolName: 'Munali Boys Secondary School',
+  phoneNumber: '0977977779',
+}
 
 export const lessons: LessonData[] = [
   {
