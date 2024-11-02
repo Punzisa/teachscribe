@@ -1,7 +1,6 @@
 import { ScrollView } from 'react-native'
 
 import { useSession } from '@/context/auth'
-import { Text, View } from 'react-native-ui-lib'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import Greeting from '@/components/HomePage/Greeting'
 import UpcomingLessons from '@/components/HomePage/UpcomingLessons'
@@ -12,7 +11,6 @@ import { useLocalSearchParams } from 'expo-router'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 
 export default function HomeScreen() {
-  const { signOut } = useSession()
   const { bottom } = useSafeAreaInsets()
   const { reload } = useLocalSearchParams()
   const runOnce = async () => {

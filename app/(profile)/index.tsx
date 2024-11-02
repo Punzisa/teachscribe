@@ -4,7 +4,12 @@ import Profile from '@/components/ProfilePage/Profile'
 const Index = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Profile firstName="John" lastName="Doe" schoolName="Harvard University" />
+      <Profile
+        salutation="Mr."
+        firstName="John"
+        lastName="Doe"
+        schoolName="Matero Secondary School"
+      />
     </SafeAreaView>
   )
 }
