@@ -17,6 +17,7 @@ import { useSession } from '@/context/auth'
 import * as ImagePicker from 'expo-image-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject, saveData } from '@/context/storage'
+import { tabBarHeightAndPadding } from '@/constants/TabBarHeightAndPadding'
 
 export interface ProfileData {
   salutation: string
@@ -187,7 +188,16 @@ const Profile = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
+      style={[
+        styles.container,
+        {
+          marginBottom:
+            Platform.OS === 'ios'
+              ? 0
+              : tabBarHeightAndPadding.androidTabBarHeight / 2 +
+                tabBarHeightAndPadding.androidTabBarPadding / 2,
+        },
+      ]}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
@@ -230,11 +240,11 @@ const Profile = () => {
               onPress={() => {
                 setIsEditing(false)
                 // Reset values to initial state
-                setSalutation(initialSalutation) // Add this
-                setFirstName(initialFirstName)
-                setLastName(initialLastName)
-                setSchoolName(initialSchoolName)
-                setPhoneNumber(initialPhoneNumber)
+                setSalutation(salutation) // Add this
+                setFirstName(firstName)
+                setLastName(lastName)
+                setSchoolName(schoolName)
+                setPhoneNumber(phoneNumber)
               }}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
@@ -252,6 +262,8 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
   scrollContainer: {
     alignItems: 'center',
@@ -259,12 +271,11 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     width: '100%',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
     color: '#333',
   },
   value: {

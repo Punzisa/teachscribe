@@ -2,8 +2,6 @@ import { primary } from '@/constants/Colors'
 import React, { useState, useEffect } from 'react'
 import { Text, StyleSheet, View, Image } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
 
@@ -47,7 +45,6 @@ const Greeting = () => {
     null
   )
 
-  const router = useRouter()
   useEffect(() => {
     const updateGreeting = () => {
       const currentHour = new Date().getHours()
@@ -112,9 +109,7 @@ const Greeting = () => {
           </Text>
           <Text style={styles.greeting}>{greeting}</Text>
         </View>
-        <TouchableOpacity onPress={() => router.push('/(profile)/')}>
-          <Avatar />
-        </TouchableOpacity>
+        <Avatar />
       </View>
     </LinearGradient>
   )

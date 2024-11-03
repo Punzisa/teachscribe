@@ -5,6 +5,7 @@ import React from 'react'
 import { Platform, StyleSheet, Text, View } from 'react-native'
 import { primary } from '@/constants/Colors'
 import FabGroup from '@/components/HomePage/FabGroup'
+import { tabBarHeightAndPadding } from '@/constants/TabBarHeightAndPadding'
 
 export default function TabLayout() {
   const { session, isLoading } = useSession()
@@ -21,10 +22,6 @@ export default function TabLayout() {
     // in the headless Node process that the pages are rendered in.
     return <Redirect href="/sign-in" />
   }
-  const iosTabBarHeight = 70
-  const androidTabBarHeight = 60
-  const androidTabBarPadding = 10
-  const iosTabBarPadding = 20
 
   return (
     <>
@@ -34,8 +31,14 @@ export default function TabLayout() {
           tabBarInactiveTintColor: primary,
           headerShown: false,
           tabBarStyle: {
-            height: Platform.OS === 'ios' ? iosTabBarHeight : androidTabBarHeight,
-            paddingBottom: Platform.OS === 'ios' ? iosTabBarPadding : androidTabBarPadding,
+            height:
+              Platform.OS === 'ios'
+                ? tabBarHeightAndPadding.iosTabBarHeight
+                : tabBarHeightAndPadding.androidTabBarHeight,
+            paddingBottom:
+              Platform.OS === 'ios'
+                ? tabBarHeightAndPadding.iosTabBarPadding
+                : tabBarHeightAndPadding.androidTabBarPadding,
           },
         }}>
         <Tabs.Screen
@@ -48,11 +51,11 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="lesson_plan"
+          name="profile"
           options={{
-            title: 'Add Lesson Plan',
+            title: 'Profile',
             tabBarIcon: ({ focused }) => (
-              <TabBarIcon name={focused ? 'add-circle' : 'add-circle-outline'} color={primary} />
+              <TabBarIcon name={focused ? 'person' : 'person-outline'} color={primary} />
             ),
           }}
         />
@@ -62,8 +65,14 @@ export default function TabLayout() {
         style={[
           styles.fabContainer,
           {
-            bottom: Platform.OS === 'ios' ? iosTabBarHeight / 2 : androidTabBarHeight / 2,
-            paddingBottom: Platform.OS === 'ios' ? iosTabBarPadding / 2 : androidTabBarPadding / 2,
+            bottom:
+              Platform.OS === 'ios'
+                ? tabBarHeightAndPadding.iosTabBarHeight / 2
+                : tabBarHeightAndPadding.androidTabBarHeight / 2,
+            paddingBottom:
+              Platform.OS === 'ios'
+                ? tabBarHeightAndPadding.iosTabBarPadding / 2
+                : tabBarHeightAndPadding.androidTabBarPadding / 2,
           },
         ]}>
         <FabGroup />
