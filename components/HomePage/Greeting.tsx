@@ -138,6 +138,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
+    flexWrap: 'wrap-reverse',
     marginBottom: 10,
   },
   container: {
