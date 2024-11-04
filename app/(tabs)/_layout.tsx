@@ -1,6 +1,6 @@
 import { TabBarIcon } from '@/components/navigation/TabBarIcon'
 import { useSession } from '@/context/auth'
-import { Redirect, Tabs } from 'expo-router'
+import { Redirect, Tabs, usePathname } from 'expo-router'
 import React from 'react'
 import { Platform, StyleSheet, Text, View } from 'react-native'
 import { primary } from '@/constants/Colors'
@@ -9,6 +9,7 @@ import { tabBarHeightAndPadding } from '@/constants/TabBarHeightAndPadding'
 
 export default function TabLayout() {
   const { session, isLoading } = useSession()
+  const pathname = usePathname()
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
@@ -60,23 +61,24 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-
-      <View
-        style={[
-          styles.fabContainer,
-          {
-            bottom:
-              Platform.OS === 'ios'
-                ? tabBarHeightAndPadding.iosTabBarHeight / 2
-                : tabBarHeightAndPadding.androidTabBarHeight / 2,
-            paddingBottom:
-              Platform.OS === 'ios'
-                ? tabBarHeightAndPadding.iosTabBarPadding / 2
-                : tabBarHeightAndPadding.androidTabBarPadding / 2,
-          },
-        ]}>
-        <FabGroup />
-      </View>
+      {pathname === '/' && (
+        <View
+          style={[
+            styles.fabContainer,
+            {
+              bottom:
+                Platform.OS === 'ios'
+                  ? tabBarHeightAndPadding.iosTabBarHeight / 2
+                  : tabBarHeightAndPadding.androidTabBarHeight / 2,
+              paddingBottom:
+                Platform.OS === 'ios'
+                  ? tabBarHeightAndPadding.iosTabBarPadding / 2
+                  : tabBarHeightAndPadding.androidTabBarPadding / 2,
+            },
+          ]}>
+          <FabGroup />
+        </View>
+      )}
     </>
   )
 }
