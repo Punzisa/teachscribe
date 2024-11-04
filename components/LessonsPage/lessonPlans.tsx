@@ -1,8 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import * as Print from 'expo-print'
-import { shareAsync } from 'expo-sharing'
 import { View } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import ClassDropdown from './ClassDropdown'
@@ -10,85 +8,39 @@ import { Colors } from '@/constants/Colors'
 import { dataChangeSubject, loadList, removeFromList } from '@/context/storage'
 import { LessonData } from '../forms/LessonPlan/LessonPlan'
 import { useRouter } from 'expo-router'
+import { ProfileData } from '../ProfilePage/Profile'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { generateAndSharePDF } from './ExportLessonPdf'
 
 interface LessonProps {
   lesson: LessonData
 }
 
-export const generateLessonHTML = (lessonData: LessonData) => {
-  return `
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-           <style>
-           html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-          }
-          body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-          }
-            .content-wrapper {
-            flex: 1 0 auto;
-            padding: 20px;
-          }
-          h1 { color: #333; }
-          .lesson-info { margin-bottom: 20px; }
-          .lesson-content { line-height: 1.6; }
-          .footer {
-            flex-shrink: 0;
-            padding: 10px 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #eee;
-          }
-        </style>
-      </head>
-      <body>
-      <div class="content-wrapper">
-        <h1>${lessonData.title}</h1>
-        <div class="lesson-info">
-          <p><strong>Date:</strong> ${lessonData.description}</p>
-          <p><strong>Duration:</strong> ${lessonData.duration} minutes</p>
-        </div>
-        <div class="lesson-content">
-          <h2>Objectives:</h2>
-          <ul>
-            ${lessonData.objectives.map((objective) => `<li>${objective}</li>`).join('')}
-          </ul>
-          <h2>Content:</h2>
-          ${lessonData.description}
-        </div>
-        </div>
-        <footer class="footer">
-        Powered by TeachScribe
-        </footer>
-      </body>
-    </html>
-  `
-}
-
-export const generateAndSharePDF = async (lessonData: LessonData) => {
-  try {
-    const html = generateLessonHTML(lessonData)
-    const { uri } = await Print.printToFileAsync({ html })
-    console.log('PDF file has been generated:', uri)
-    await shareAsync(uri, {
-      UTI: '.pdf',
-      mimeType: 'application/pdf',
-      dialogTitle: 'Share your lesson plan',
-    })
-  } catch (error) {
-    console.error('Error generating or sharing PDF:', error)
-  }
-}
-
 const Lessons: React.FC<LessonProps> = ({ lesson }) => {
+  const [teacherProfile, setTeacherProfile] = useState<ProfileData | null>(null)
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const profileData = await AsyncStorage.getItem('profile')
+        if (profileData) {
+          const parsedData: ProfileData = JSON.parse(profileData)
+          setTeacherProfile(parsedData)
+        }
+      } catch (error) {
+        console.error('Error loading profile data:', error)
+      }
+    }
+
+    loadProfileData()
+
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'profile') {
+        loadProfileData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
   const colorScheme = useColorScheme()
   const [showDropdown, setShowDropdown] = useState(false)
   const router = useRouter()
@@ -107,7 +59,7 @@ const Lessons: React.FC<LessonProps> = ({ lesson }) => {
 
   const handlePress = (button: string) => {
     if (button === 'Export') {
-      generateAndSharePDF(lesson)
+      generateAndSharePDF(lesson, teacherProfile!)
     }
     if (button === 'Delete') {
       removeFromList('lessons', lesson.id)
@@ -163,7 +115,11 @@ export default function LessonPlans() {
 
   const getData = async () => {
     const loadedData = await loadList<LessonData>('lessons')
-    setLessons(loadedData)
+    const lessonsWithDateObjects = loadedData?.map((lesson) => ({
+      ...lesson,
+      date: new Date(lesson.date), // Convert string date to Date object
+    }))
+    setLessons(lessonsWithDateObjects!)
 
     // Generate classroom options from loaded data
     const uniqueClasses = Array.from(new Set(loadedData?.map((lesson) => lesson.class)))

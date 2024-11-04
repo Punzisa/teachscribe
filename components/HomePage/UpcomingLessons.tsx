@@ -5,7 +5,9 @@ import { Colors } from '@/constants/Colors'
 import { LessonData } from '../forms/LessonPlan/LessonPlan'
 import { dataChangeSubject, loadList } from '@/context/storage'
 import HorizontalButtonList from './HorizontalButtonList'
-import { generateAndSharePDF } from '../LessonsPage/lessonPlans'
+import { ProfileData } from '../ProfilePage/Profile'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { generateAndSharePDF } from '../LessonsPage/ExportLessonPdf'
 
 const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => {
   return (
@@ -17,7 +19,10 @@ const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => 
   )
 }
 
-const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
+const LessonCard: React.FC<{ lesson: LessonData; teacherProfile: ProfileData }> = ({
+  lesson,
+  teacherProfile,
+}) => {
   const router = useRouter()
 
   return (
@@ -37,7 +42,10 @@ const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
               })
             }
           />
-          <DropDownButton title="Export" onPress={() => generateAndSharePDF(lesson)} />
+          <DropDownButton
+            title="Export"
+            onPress={() => generateAndSharePDF(lesson, teacherProfile!)}
+          />
         </View>
       </View>
     </View>
@@ -46,10 +54,39 @@ const LessonCard: React.FC<{ lesson: LessonData }> = ({ lesson }) => {
 
 const UpcomingLessons = () => {
   const [lessons, setLessons] = useState<LessonData[] | null>(null)
+  const [teacherProfile, setTeacherProfile] = useState<ProfileData | null>()
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const profileData = await AsyncStorage.getItem('profile')
+        if (profileData) {
+          const parsedData: ProfileData = JSON.parse(profileData)
+          console.log('Loaded profile data:', parsedData)
+          setTeacherProfile(parsedData)
+        }
+      } catch (error) {
+        console.error('Error loading profile data:', error)
+      }
+    }
+
+    loadProfileData()
+
+    const subscription = dataChangeSubject.subscribe((changedKey) => {
+      if (changedKey === 'profile') {
+        loadProfileData()
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const getData = async () => {
     const loadedData = await loadList<LessonData>('lessons')
-    setLessons(loadedData)
+    const lessonsWithDateObjects = loadedData?.map((lesson) => ({
+      ...lesson,
+      date: new Date(lesson.date), // Convert string date to Date object
+    }))
+    setLessons(lessonsWithDateObjects!)
   }
   useEffect(() => {
     getData()
@@ -68,7 +105,9 @@ const UpcomingLessons = () => {
       <Text style={styles.title}>Upcoming Lessons</Text>
       <HorizontalButtonList />
       {topTwoLessons !== undefined &&
-        topTwoLessons.map((item) => <LessonCard key={item.id} lesson={item} />)}
+        topTwoLessons.map((item) => (
+          <LessonCard key={item.id} lesson={item} teacherProfile={teacherProfile!} />
+        ))}
     </View>
   )
 }

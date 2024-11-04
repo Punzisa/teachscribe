@@ -23,7 +23,7 @@ const Layout = () => {
         options={{
           headerShown: true,
           headerTitle: 'Create Lesson',
-          headerBackTitleVisible: false,
+          headerBackVisible: true,
         }}
       />
       <Stack.Screen
