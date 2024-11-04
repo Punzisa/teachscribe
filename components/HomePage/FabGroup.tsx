@@ -25,20 +25,20 @@ const FabGroup = () => {
           <FAB
             icon="school"
             label="Lesson Plans"
-            color="white"
+            color="black"
             onPress={() => handleRoute('/(lesson)/lesson_plan')}
             style={styles.fab}
           />
           <FAB
             icon="notebook"
-            color="white"
+            color="black"
             label="Schemes of Work"
             onPress={() => console.log('Phone pressed')}
             style={styles.fab}
           />
           <FAB
             icon="record"
-            color="white"
+            color="black"
             label="Records of Work"
             onPress={() => console.log('Message pressed')}
             style={styles.fab}
@@ -59,7 +59,7 @@ export default FabGroup
 
 const styles = StyleSheet.create({
   fab: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#ddd',
     margin: 8,
   },
 })
