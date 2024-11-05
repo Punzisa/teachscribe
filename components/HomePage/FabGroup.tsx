@@ -19,7 +19,7 @@ const FabGroup = () => {
   const router = useRouter()
 
   return (
-    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
+    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }}>
       {open && (
         <>
           <FAB
@@ -49,7 +49,7 @@ const FabGroup = () => {
         icon={open ? 'close' : 'plus'}
         color="white"
         onPress={handleFabPress}
-        style={{ backgroundColor: Colors.primary }}
+        style={{ backgroundColor: open ? 'black' : Colors.primary }}
       />
     </View>
   )
@@ -60,6 +60,6 @@ export default FabGroup
 const styles = StyleSheet.create({
   fab: {
     backgroundColor: '#ddd',
-    margin: 8,
+    marginBottom: 12,
   },
 })

@@ -68,12 +68,12 @@ export default function TabLayout() {
             {
               bottom:
                 Platform.OS === 'ios'
-                  ? tabBarHeightAndPadding.iosTabBarHeight / 2
-                  : tabBarHeightAndPadding.androidTabBarHeight / 2,
+                  ? tabBarHeightAndPadding.iosTabBarHeight
+                  : tabBarHeightAndPadding.androidTabBarHeight,
               paddingBottom:
                 Platform.OS === 'ios'
-                  ? tabBarHeightAndPadding.iosTabBarPadding / 2
-                  : tabBarHeightAndPadding.androidTabBarPadding / 2,
+                  ? tabBarHeightAndPadding.iosTabBarPadding
+                  : tabBarHeightAndPadding.androidTabBarPadding,
             },
           ]}>
           <FabGroup />
@@ -86,8 +86,7 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   fabContainer: {
     position: 'absolute',
-    left: 0,
-    right: 0,
+    right: 20,
     zIndex: 1,
   },
 })

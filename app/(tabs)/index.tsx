@@ -1,16 +1,15 @@
-import { ScrollView } from 'react-native'
+import { Platform, ScrollView } from 'react-native'
 
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import Greeting from '@/components/HomePage/Greeting'
 import UpcomingLessons from '@/components/HomePage/UpcomingLessons'
 import GetStarted from '@/components/HomePage/GetStarted/GetStarted'
 import { useEffect } from 'react'
 import { initialiseData, loadData, saveData } from '@/context/storage'
 import { useLocalSearchParams } from 'expo-router'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
+import { tabBarHeightAndPadding } from '@/constants/TabBarHeightAndPadding'
 
 export default function HomeScreen() {
-  const { bottom } = useSafeAreaInsets()
   const { reload } = useLocalSearchParams()
   const runOnce = async () => {
     try {
@@ -39,7 +38,12 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: useBottomTabBarHeight() + bottom + 200,
+          paddingBottom:
+            Platform.OS === 'ios'
+              ? tabBarHeightAndPadding.iosTabBarHeight * 3 +
+                tabBarHeightAndPadding.iosTabBarPadding * 2
+              : tabBarHeightAndPadding.androidTabBarHeight * 4 +
+                tabBarHeightAndPadding.androidTabBarPadding * 3,
         }}>
         <GetStarted />
         <UpcomingLessons />

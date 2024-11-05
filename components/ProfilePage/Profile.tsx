@@ -17,7 +17,6 @@ import { useSession } from '@/context/auth'
 import * as ImagePicker from 'expo-image-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject, saveData } from '@/context/storage'
-import { tabBarHeightAndPadding } from '@/constants/TabBarHeightAndPadding'
 
 export interface ProfileData {
   salutation: string
@@ -188,16 +187,7 @@ const Profile = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[
-        styles.container,
-        {
-          marginBottom:
-            Platform.OS === 'ios'
-              ? 0
-              : tabBarHeightAndPadding.androidTabBarHeight / 2 +
-                tabBarHeightAndPadding.androidTabBarPadding / 2,
-        },
-      ]}>
+      style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
