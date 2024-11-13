@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { Colors } from '@/constants/Colors'
 import { LessonData } from '../forms/LessonPlan/LessonPlan'
 import { dataChangeSubject, loadList } from '@/context/storage'
-import HorizontalButtonList from './HorizontalButtonList'
 import { ProfileData } from '../ProfilePage/Profile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { generateAndSharePDF } from '../LessonsPage/ExportLessonPdf'
@@ -31,6 +30,7 @@ const LessonCard: React.FC<{ lesson: LessonData; teacherProfile: ProfileData }> 
         <View>
           <Text style={styles.cardTitle}>{lesson.title}</Text>
           <Text style={styles.cardSubtitle}>{lesson.class}</Text>
+          <Text>{lesson.date.toDateString()}</Text>
         </View>
         <View>
           <DropDownButton
@@ -53,8 +53,11 @@ const LessonCard: React.FC<{ lesson: LessonData; teacherProfile: ProfileData }> 
 }
 
 const UpcomingLessons = () => {
-  const [lessons, setLessons] = useState<LessonData[] | null>(null)
+  const [upcomingLessons, setUpcomingLessons] = useState<LessonData[] | null>(null)
+  const [filteredLessons, setFilteredLessons] = useState<LessonData[] | null>(null)
+  const [selectedClass, setSelectedClass] = useState<string>('All')
   const [teacherProfile, setTeacherProfile] = useState<ProfileData | null>()
+  const [classrooms, setClassrooms] = useState<string[]>(['All'])
   useEffect(() => {
     const loadProfileData = async () => {
       try {
@@ -84,9 +87,14 @@ const UpcomingLessons = () => {
     const loadedData = await loadList<LessonData>('lessons')
     const lessonsWithDateObjects = loadedData?.map((lesson) => ({
       ...lesson,
-      date: new Date(lesson.date), // Convert string date to Date object
+      date: new Date(lesson.date),
     }))
-    setLessons(lessonsWithDateObjects!)
+    const futureLessons = lessonsWithDateObjects?.filter((lesson) => lesson.date > new Date())
+    futureLessons?.sort((a, b) => a.date.getTime() - b.date.getTime())
+    setUpcomingLessons(futureLessons!)
+    setFilteredLessons(futureLessons!)
+    const uniqueClassrooms = ['All', ...new Set(futureLessons?.map((lesson) => lesson.class) || [])]
+    setClassrooms(uniqueClassrooms)
   }
   useEffect(() => {
     getData()
@@ -99,13 +107,40 @@ const UpcomingLessons = () => {
     return () => subscription.unsubscribe()
   }, [])
 
-  const topTwoLessons = lessons?.slice(0, 2)
+  const filterLessonsByClass = (classroom: string) => {
+    setSelectedClass(classroom)
+    if (classroom === 'All') {
+      setFilteredLessons(upcomingLessons)
+    } else {
+      setFilteredLessons(upcomingLessons?.filter((lesson) => lesson.class === classroom) || null)
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upcoming Lessons</Text>
-      <HorizontalButtonList />
-      {topTwoLessons !== undefined &&
-        topTwoLessons.map((item) => (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filterContainer}
+        contentContainerStyle={styles.filterContentContainer}>
+        {classrooms.map((classroom) => (
+          <TouchableOpacity
+            key={classroom}
+            style={[styles.pillButton, selectedClass === classroom && styles.pillButtonActive]}
+            onPress={() => filterLessonsByClass(classroom)}>
+            <Text
+              style={[
+                styles.pillButtonText,
+                selectedClass === classroom && styles.pillButtonTextActive,
+              ]}>
+              {classroom}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {filteredLessons !== null &&
+        filteredLessons.map((item) => (
           <LessonCard key={item.id} lesson={item} teacherProfile={teacherProfile!} />
         ))}
     </View>
@@ -143,6 +178,37 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     marginTop: 8,
+  },
+  filterContainer: {
+    maxHeight: 50,
+    marginBottom: 16,
+  },
+  filterContentContainer: {
+    paddingHorizontal: 4,
+  },
+  pillButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 4,
+    borderRadius: 20,
+    backgroundColor: '#F3F4F6',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    minWidth: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillButtonActive: {
+    backgroundColor: '#3B82F6',
+    borderColor: '#2563EB',
+  },
+  pillButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4B5563',
+  },
+  pillButtonTextActive: {
+    color: '#FFFFFF',
   },
 })
 
