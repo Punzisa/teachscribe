@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "teachscribe",
     "slug": "teachscribe",
     "version": "1.0.0",
@@ -36,7 +37,8 @@
         {
           "photosPermission": "The app accesses your photos to pick a profile picture."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
