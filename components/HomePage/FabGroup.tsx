@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors'
-import { Href, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { FAB } from 'react-native-paper'
@@ -7,7 +7,7 @@ import { FAB } from 'react-native-paper'
 const FabGroup = () => {
   const [open, setOpen] = useState(false)
 
-  const handleRoute = (route: Href<string | object>) => {
+  const handleRoute = (route) => {
     router.push(route)
     setOpen(false)
   }
@@ -33,7 +33,7 @@ const FabGroup = () => {
             icon="notebook"
             color="black"
             label="Schemes of Work"
-            onPress={() => console.log('Phone pressed')}
+            onPress={() => handleRoute('/(schemes_of_work)/create_schemes_of_work')}
             style={styles.fab}
           />
           <FAB
@@ -59,7 +59,7 @@ export default FabGroup
 
 const styles = StyleSheet.create({
   fab: {
-    backgroundColor: '#ddd',
+    backgroundColor: Colors.light.background,
     marginBottom: 12,
   },
 })
