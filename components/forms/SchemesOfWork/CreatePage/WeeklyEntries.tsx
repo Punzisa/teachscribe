@@ -45,7 +45,7 @@ const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
               </View>
               <>
                 <TouchableOpacity onPress={() => handleDeleteEntry(entry)}>
-                  <Text>Delete</Text>
+                  <Text style={styles.deleteButtonText}>Delete</Text>
                 </TouchableOpacity>
               </>
             </View>
@@ -97,5 +97,8 @@ const styles = StyleSheet.create({
   },
   weekText: {
     fontWeight: '500',
+  },
+  deleteButtonText: {
+    color: 'red',
   },
 })
