@@ -11,10 +11,10 @@ const Layout = () => {
         }}
       />
       <Stack.Screen
-        name="creating_lesson"
+        name="creating_document"
         options={{
           headerShown: true,
-          headerTitle: 'Creating Lesson',
+          headerTitle: 'Creating Document',
           headerBackVisible: false,
         }}
       />
@@ -22,7 +22,7 @@ const Layout = () => {
         name="lesson_plan"
         options={{
           headerShown: true,
-          headerTitle: 'Create Lesson',
+          headerTitle: 'Create Lesson Plan',
           headerBackVisible: true,
         }}
       />
@@ -30,8 +30,8 @@ const Layout = () => {
         name="lesson_plans"
         options={{
           headerShown: true,
-          headerTitle: 'Lessons - Class',
-          headerBackTitleVisible: false,
+          headerTitle: 'Lesson Plans',
+          headerBackVisible: true,
         }}
       />
     </Stack>

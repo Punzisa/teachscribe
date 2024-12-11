@@ -65,7 +65,7 @@ const CircularProgress: React.FC = () => {
             />
           </Svg>
           <View style={styles.textContainer}>
-            <Text>Creating lesson...</Text>
+            <Text>Creating document...</Text>
           </View>
         </View>
       )}
