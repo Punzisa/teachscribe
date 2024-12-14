@@ -16,8 +16,13 @@ const GetStarted = () => {
       route: '/(schemes_of_work)/schemes_of_work',
       colors: ['#548AD8', '#8A4BD3'],
     },
-    { id: '3', text: 'Assessment', route: '/route3', colors: ['#065867', '#4683D3'] },
-    { id: '4', text: 'How Tools', route: '/route4', colors: ['#F33E62', '#F79334'] },
+    {
+      id: '3',
+      text: 'Records of Work',
+      route: '/(records_of_work)/records_of_work',
+      colors: ['#065867', '#4683D3'],
+    },
+    // { id: '4', text: 'How Tools', route: '/route4', colors: ['#F33E62', '#F79334'] },
   ]
 
   return (
@@ -51,7 +56,7 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   gridItem: {
     width: '48%',

@@ -43,7 +43,7 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(lesson)" options={{ headerShown: false }} />
             <Stack.Screen name="(schemes_of_work)" options={{ headerShown: false }} />
-
+            <Stack.Screen name="(records_of_work)" options={{ headerShown: false }} />
             <Stack.Screen
               name="(profile)"
               options={{

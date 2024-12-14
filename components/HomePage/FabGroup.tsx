@@ -40,7 +40,7 @@ const FabGroup = () => {
             icon="record"
             color="black"
             label="Records of Work"
-            onPress={() => console.log('Message pressed')}
+            onPress={() => handleRoute('/(records_of_work)/create_records_of_work')}
             style={styles.fab}
           />
         </>
