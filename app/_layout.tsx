@@ -42,13 +42,14 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(lesson)" options={{ headerShown: false }} />
+            <Stack.Screen name="(schemes_of_work)" options={{ headerShown: false }} />
+            <Stack.Screen name="(records_of_work)" options={{ headerShown: false }} />
             <Stack.Screen
               name="(profile)"
               options={{
                 headerShown: true,
                 headerTitle: 'Profile',
                 headerBackVisible: true,
-                headerBackTitleVisible: false,
               }}
             />
             <Stack.Screen name="+not-found" />

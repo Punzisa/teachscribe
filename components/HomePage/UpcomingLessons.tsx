@@ -140,6 +140,7 @@ const UpcomingLessons = () => {
         ))}
       </ScrollView>
       {filteredLessons !== null &&
+        filteredLessons !== undefined &&
         filteredLessons.map((item) => (
           <LessonCard key={item.id} lesson={item} teacherProfile={teacherProfile!} />
         ))}

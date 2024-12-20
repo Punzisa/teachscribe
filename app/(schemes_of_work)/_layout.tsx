@@ -5,32 +5,24 @@ const Layout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="view_lesson"
+        name="view_schemes_of_work"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="creating_document"
+        name="schemes_of_work"
         options={{
           headerShown: true,
-          headerTitle: 'Creating Document',
-          headerBackVisible: false,
-        }}
-      />
-      <Stack.Screen
-        name="lesson_plan"
-        options={{
-          headerShown: true,
-          headerTitle: 'Create Lesson Plan',
+          headerTitle: 'Schemes of Work',
           headerBackVisible: true,
         }}
       />
       <Stack.Screen
-        name="lesson_plans"
+        name="create_schemes_of_work"
         options={{
           headerShown: true,
-          headerTitle: 'Lesson Plans',
+          headerTitle: 'Create Schemes of Work',
           headerBackVisible: true,
         }}
       />

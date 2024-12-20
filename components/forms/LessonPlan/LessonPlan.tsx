@@ -51,7 +51,7 @@ export default function LessonPlan() {
   const handleSubmit = () => {
     console.log('Submitting lesson data:', lessonData)
     addNewItem('lessons', lessonData)
-    router.push(`/(lesson)/creating_lesson`)
+    router.push(`/(lesson)/creating_document`)
   }
   return (
     <ProgressSteps
