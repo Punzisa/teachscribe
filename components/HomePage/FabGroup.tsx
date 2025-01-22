@@ -43,6 +43,13 @@ const FabGroup = () => {
             onPress={() => handleRoute('/(records_of_work)/create_records_of_work')}
             style={styles.fab}
           />
+          {/* <FAB
+            icon="home"
+            color="black"
+            label="Homework Sheets"
+            onPress={() => handleRoute('/(homework_sheets)/create_homework_sheet')}
+            style={styles.fab}
+          /> */}
         </>
       )}
       <FAB
@@ -59,7 +66,7 @@ export default FabGroup
 
 const styles = StyleSheet.create({
   fab: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: '#ccc',
     marginBottom: 12,
   },
 })

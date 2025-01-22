@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { LessonData } from './forms/LessonPlan/LessonPlan'
+import { LearningDevelopment, LessonData } from './forms/LessonPlan/LessonPlan'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
 
@@ -62,22 +62,51 @@ export default function ViewLesson() {
           <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.subtitle}>Subject: {lesson.subject}</Text>
-      <Text style={styles.subtitle}>Classroom: {lesson.class}</Text>
+      <Text style={styles.subtitle}>Date: {lesson.date.toLocaleDateString()}</Text>
       <Text style={styles.subtitle}>
         Teacher Name: {teacherData?.salutation} {teacherData?.firstName} {teacherData?.lastName}
       </Text>
-      <Text style={styles.subtitle}>Date: {lesson.date.toLocaleDateString()}</Text>
+      <Text style={styles.subtitle}>
+        <Text style={styles.subSectionTitle}>Class:</Text> {lesson.class}
+      </Text>
+      <Text style={styles.subtitle}>Subject: {lesson.subject}</Text>
       <Text style={styles.subtitle}>Time: {lesson.date.toLocaleTimeString()}</Text>
       <Text style={styles.subtitle}>Duration: {lesson.duration}</Text>
+      <Text style={styles.subtitle}>Resources: {lesson.resources}</Text>
+      <Text style={styles.subtitle}>References: {lesson.references}</Text>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Description</Text>
         <Text>{lesson.description}</Text>
       </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Major Learning Outcome</Text>
+        <Text>{lesson.majorLearningOutcome}</Text>
+      </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Objectives</Text>
+        <Text style={styles.sectionTitle}>Evidence of Attainment</Text>
+        <Text>{lesson.evidenceOfAttainment}</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Rationale</Text>
+        <Text>{lesson.rationale}</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Learning Development</Text>
+        {lesson.learningDevelopmentEntries.map((entry: LearningDevelopment) => (
+          <View key={entry.id}>
+            <Text>Time: {entry.time}</Text>
+            <Text>Teacher Activities: {entry.teacherActivites}</Text>
+            <Text>Learner Activities: {entry.learnerActivities}</Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Learning Objectives</Text>
         {lesson.objectives.map((objective, index) => (
           <Text key={index}>• {objective}</Text>
         ))}
@@ -87,10 +116,19 @@ export default function ViewLesson() {
         <Text style={styles.sectionTitle}>Activities</Text>
         {Object.entries(lesson.activities).map(([key, value]) => (
           <View key={key} style={styles.activity}>
-            <Text style={styles.activityTitle}>{formatActivitesKey(key)}:</Text>
+            <Text style={styles.subSectionTitle}>{formatActivitesKey(key)}:</Text>
             <Text>{value}</Text>
           </View>
         ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Teacher Evaluation:</Text>
+        <Text>{lesson.teacherEvaluation}</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Pupil Evaluation:</Text>
+        <Text>{lesson.pupilEvaluation}</Text>
       </View>
     </ScrollView>
   )
@@ -98,10 +136,9 @@ export default function ViewLesson() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: 30,
     paddingTop: 20,
-    paddingBottom: 100,
+    paddingBottom: 400,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -143,7 +180,7 @@ const styles = StyleSheet.create({
   activity: {
     marginBottom: 8,
   },
-  activityTitle: {
+  subSectionTitle: {
     fontWeight: 'bold',
   },
   teachersSignature: {
