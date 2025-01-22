@@ -14,14 +14,12 @@ export type ActivitiesType = {
   teachingActivities: string
   pupilActivities: string
 }
-interface ActivitiesProps {
-  lessonData: {
-    activities: ActivitiesType
-  }
+interface EvaluationProps {
+  lessonData: LessonData
   updateLessonData: (newData: Partial<LessonData>) => void
 }
 
-const Activities: React.FC<ActivitiesProps> = ({ lessonData, updateLessonData }) => {
+const Evaluation: React.FC<EvaluationProps> = ({ lessonData, updateLessonData }) => {
   const handleChange = (key: keyof Activities, value: string) => {
     updateLessonData({
       activities: {
@@ -34,6 +32,30 @@ const Activities: React.FC<ActivitiesProps> = ({ lessonData, updateLessonData })
   return (
     <View style={styles.container}>
       <TextInputField
+        setTextValue={lessonData.evidenceOfAttainment}
+        placeholder={'Evidence of Attainment'}
+        onInputChange={(text: string) => updateLessonData({ evidenceOfAttainment: text })}
+        multiline
+      />
+      <TextInputField
+        setTextValue={lessonData.rationale}
+        placeholder={'Rationale'}
+        onInputChange={(text: string) => updateLessonData({ rationale: text })}
+        multiline
+      />
+      <TextInputField
+        setTextValue={lessonData.teacherEvaluation}
+        placeholder={'Teacher Evaluation'}
+        onInputChange={(text: string) => updateLessonData({ teacherEvaluation: text })}
+        multiline
+      />
+      <TextInputField
+        setTextValue={lessonData.pupilEvaluation}
+        placeholder={'Pupil Evaluation'}
+        onInputChange={(text: string) => updateLessonData({ pupilEvaluation: text })}
+        multiline
+      />
+      {/* <TextInputField
         setTextValue={lessonData.activities.teachingAids}
         placeholder={'Teaching Aids'}
         onInputChange={(teachingAids: string) => handleChange('teachingAids', teachingAids)}
@@ -54,12 +76,12 @@ const Activities: React.FC<ActivitiesProps> = ({ lessonData, updateLessonData })
           handleChange('pupilActivities', pupilActivities)
         }
         multiline
-      />
+      /> */}
     </View>
   )
 }
 
-export default Activities
+export default Evaluation
 
 const styles = StyleSheet.create({
   container: {

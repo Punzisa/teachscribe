@@ -22,7 +22,12 @@ const GetStarted = () => {
       route: '/(records_of_work)/records_of_work',
       colors: ['#065867', '#4683D3'],
     },
-    // { id: '4', text: 'How Tools', route: '/route4', colors: ['#F33E62', '#F79334'] },
+    // {
+    //   id: '4',
+    //   text: 'Homework Sheets',
+    //   route: '/(homework_sheets)/homework_sheets',
+    //   colors: ['#F33E62', '#F79334'],
+    // },
   ]
 
   return (

@@ -39,9 +39,9 @@ const WeeklyEntries: React.FC<ROWProps> = ({ rowData, updateSOWData }) => {
         <View>
           {rowData.entries.map((entry) => (
             <View key={entry.id} style={styles.entryContainer}>
-              <View style={{ flexDirection: 'column', gap: 4 }}>
+              <View style={{ flexDirection: 'column', gap: 4, width: '80%' }}>
                 <Text style={styles.weekText}>Week: {entry.week}</Text>
-                <Text>{entry.commentsOnLearnersProgress}</Text>
+                <Text style={{ flexWrap: 'wrap' }}>{entry.commentsOnLearnersProgress}</Text>
               </View>
               <>
                 <TouchableOpacity onPress={() => handleDeleteEntry(entry)}>

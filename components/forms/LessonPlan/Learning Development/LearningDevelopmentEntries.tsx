@@ -1,27 +1,32 @@
 import { useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native'
 
-import { SOWData, SOWEntry } from './CreateSchemesOfWork'
 import { Colors } from '@/constants/Colors'
-import AddWeekEntry from './AddWeekEntry'
+import AddLearningDevelopmentEntry from './AddLearningDevelopmentEntry'
+import { LearningDevelopment, LessonData } from '../LessonPlan'
 
-interface SOWProps {
-  sowData: {
-    entries: SOWEntry[]
+interface LearningDevelopmentEntriesProps {
+  lessonData: {
+    learningDevelopmentEntries: LearningDevelopment[]
   }
-  updateSOWData: (newData: Partial<SOWData>) => void
+  updateLessonData: (newData: Partial<LessonData>) => void
 }
 
-const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
+const LearningDevelopmentEntries: React.FC<LearningDevelopmentEntriesProps> = ({
+  lessonData,
+  updateLessonData,
+}) => {
   const [showNewEntryModal, setShowNewEntryModal] = useState<boolean>(false)
 
   const toggleShowNewEntryModal = () => {
     setShowNewEntryModal(!showNewEntryModal)
   }
 
-  const handleDeleteEntry = (entryToDelete: SOWEntry) => {
-    const updatedEntries = sowData.entries.filter((entry) => entry.id !== entryToDelete.id)
-    updateSOWData({ entries: updatedEntries })
+  const handleDeleteEntry = (entryToDelete: LearningDevelopment) => {
+    const updatedEntries = lessonData.learningDevelopmentEntries.filter(
+      (entry) => entry.id !== entryToDelete.id
+    )
+    updateLessonData({ learningDevelopmentEntries: updatedEntries })
   }
 
   return (
@@ -31,17 +36,23 @@ const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
           <Text style={styles.newEntryButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
-      {sowData.entries.length === 0 ? (
+      {lessonData.learningDevelopmentEntries.length === 0 ? (
         <View style={styles.noEntryContainer}>
           <Text style={{ textAlign: 'center' }}>No Entries Added</Text>
         </View>
       ) : (
-        <View>
-          {sowData.entries.map((entry) => (
+        <ScrollView>
+          {lessonData.learningDevelopmentEntries.map((entry) => (
             <View key={entry.id} style={styles.entryContainer}>
               <View style={{ flexDirection: 'column', gap: 4, width: '80%' }}>
-                <Text style={styles.weekText}>Week: {entry.week}</Text>
-                <Text style={{ flexWrap: 'wrap' }}>{entry.learningOutcome}</Text>
+                <View>
+                  <Text style={styles.entryTitle}>Time:</Text>
+                  <Text>{entry.time}</Text>
+                </View>
+                <Text style={styles.entryTitle}>Teacher Activities:</Text>
+                <Text style={{ flexWrap: 'wrap' }}>{entry.teacherActivites}</Text>
+                <Text style={styles.entryTitle}>Learner Activities:</Text>
+                <Text style={{ flexWrap: 'wrap' }}>{entry.learnerActivities}</Text>
               </View>
               <>
                 <TouchableOpacity onPress={() => handleDeleteEntry(entry)}>
@@ -50,21 +61,21 @@ const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
               </>
             </View>
           ))}
-        </View>
+        </ScrollView>
       )}
       {showNewEntryModal && (
-        <AddWeekEntry
+        <AddLearningDevelopmentEntry
           isVisible={showNewEntryModal}
           onClose={toggleShowNewEntryModal}
-          sowData={sowData}
-          updateSOWData={updateSOWData}
+          lessonData={lessonData}
+          updateLessonData={updateLessonData}
         />
       )}
     </View>
   )
 }
 
-export default WeeklyEntries
+export default LearningDevelopmentEntries
 
 const styles = StyleSheet.create({
   noEntryContainer: {
@@ -96,7 +107,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
-  weekText: {
+  entryTitle: {
     fontWeight: '500',
   },
   deleteButtonText: {

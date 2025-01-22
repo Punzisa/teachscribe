@@ -9,11 +9,18 @@ import {
 import { primary } from '@/constants/Colors'
 import LessonDetails from '@/components/forms/LessonPlan/LessonDetails'
 import LessonObjectives from '@/components/forms/LessonPlan/LessonObjectives'
-import Activities, { ActivitiesType } from './Activities'
+import Evaluation, { ActivitiesType } from './Evaluation'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { addNewItem } from '@/context/storage'
+import LearningDevelopmentEntries from './Learning Development/LearningDevelopmentEntries'
 
+export interface LearningDevelopment {
+  id: string
+  time: string
+  teacherActivites: string
+  learnerActivities: string
+}
 export interface LessonData {
   id: string
   title: string
@@ -24,6 +31,14 @@ export interface LessonData {
   objectives: string[]
   activities: ActivitiesType
   date: Date
+  resources: string
+  references: string
+  majorLearningOutcome: string
+  evidenceOfAttainment: string
+  rationale: string
+  learningDevelopmentEntries: LearningDevelopment[]
+  teacherEvaluation: string
+  pupilEvaluation: string
 }
 
 export default function LessonPlan() {
@@ -42,6 +57,14 @@ export default function LessonPlan() {
       pupilActivities: '',
     },
     date: new Date(),
+    resources: '',
+    references: '',
+    majorLearningOutcome: '',
+    evidenceOfAttainment: '',
+    rationale: '',
+    learningDevelopmentEntries: [],
+    teacherEvaluation: '',
+    pupilEvaluation: '',
   })
 
   const updateLessonData = (newData: Partial<LessonData>) => {
@@ -61,7 +84,7 @@ export default function LessonPlan() {
       completedStepIconColor={primary}
       completedProgressBarColor={primary}>
       <ProgressStep
-        label="Lesson Details"
+        label="Details"
         onNext={() => {}}
         onPrevious={() => {}}
         nextBtnTextStyle={nextBtnStyle}
@@ -71,7 +94,7 @@ export default function LessonPlan() {
         </View>
       </ProgressStep>
       <ProgressStep
-        label="Lesson Objectives"
+        label="Objectives"
         onNext={() => {}}
         onPrevious={() => {}}
         nextBtnTextStyle={nextBtnStyle}
@@ -81,13 +104,23 @@ export default function LessonPlan() {
         </View>
       </ProgressStep>
       <ProgressStep
-        label="Activities"
+        label="Evaluation"
+        onNext={() => {}}
+        onPrevious={() => {}}
+        nextBtnTextStyle={nextBtnStyle}
+        previousBtnTextStyle={previousBtnStyle}>
+        <View style={containerStyles.container}>
+          <Evaluation lessonData={lessonData} updateLessonData={updateLessonData} />
+        </View>
+      </ProgressStep>
+      <ProgressStep
+        label="Lesson Development"
         onPrevious={() => {}}
         onSubmit={handleSubmit}
         nextBtnTextStyle={nextBtnStyle}
         previousBtnTextStyle={previousBtnStyle}>
         <View style={containerStyles.container}>
-          <Activities lessonData={lessonData} updateLessonData={updateLessonData} />
+          <LearningDevelopmentEntries lessonData={lessonData} updateLessonData={updateLessonData} />
         </View>
       </ProgressStep>
     </ProgressSteps>
