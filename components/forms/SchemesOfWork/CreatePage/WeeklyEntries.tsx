@@ -39,9 +39,9 @@ const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
         <View>
           {sowData.entries.map((entry) => (
             <View key={entry.id} style={styles.entryContainer}>
-              <View style={{ flexDirection: 'column', gap: 4 }}>
+              <View style={{ flexDirection: 'column', gap: 4, width: '80%' }}>
                 <Text style={styles.weekText}>Week: {entry.week}</Text>
-                <Text>{entry.learningOutcome}</Text>
+                <Text style={{ flexWrap: 'wrap' }}>{entry.learningOutcome}</Text>
               </View>
               <>
                 <TouchableOpacity onPress={() => handleDeleteEntry(entry)}>
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 5,
     backgroundColor: '#fff',
     borderWidth: 0.2,
     borderRadius: 3,
