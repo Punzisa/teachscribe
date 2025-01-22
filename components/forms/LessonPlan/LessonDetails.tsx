@@ -14,12 +14,13 @@ const LessonDetails: React.FC<LessonDetailsProps> = ({ lessonData, updateLessonD
       <TextInputField
         setTextValue={lessonData.title}
         onInputChange={(text: string) => updateLessonData({ title: text })}
-        placeholder="Lesson Title"
+        placeholder="Title"
       />
       <TextInputField
         setTextValue={lessonData.description}
         onInputChange={(text: string) => updateLessonData({ description: text })}
-        placeholder="Lesson Description"
+        placeholder="Description"
+        multiline
       />
       <TextInputField
         setTextValue={lessonData.class}
@@ -30,6 +31,24 @@ const LessonDetails: React.FC<LessonDetailsProps> = ({ lessonData, updateLessonD
         setTextValue={lessonData.subject}
         onInputChange={(text: string) => updateLessonData({ subject: text })}
         placeholder="Subject"
+      />
+      <TextInputField
+        setTextValue={lessonData.resources}
+        onInputChange={(text: string) => updateLessonData({ resources: text })}
+        placeholder="Resources"
+        multiline
+      />
+      <TextInputField
+        setTextValue={lessonData.references}
+        onInputChange={(text: string) => updateLessonData({ references: text })}
+        placeholder="References"
+        multiline
+      />
+      <TextInputField
+        setTextValue={lessonData.majorLearningOutcome}
+        onInputChange={(text: string) => updateLessonData({ majorLearningOutcome: text })}
+        placeholder="Major Learning Outcome"
+        multiline
       />
       <TimeDuration
         setTextValue={lessonData.duration}
