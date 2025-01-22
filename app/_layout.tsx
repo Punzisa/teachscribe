@@ -1,6 +1,5 @@
 import { SessionProvider } from '@/context/auth'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
@@ -12,7 +11,6 @@ import 'react-native-reanimated'
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
-  // const colorScheme = useColorScheme()
   const [loaded] = useFonts({
     'Poppins-Black': require('../assets/fonts/Poppins-Black.otf'),
     'Poppins-Bold': require('../assets/fonts/Poppins-Bold.otf'),
