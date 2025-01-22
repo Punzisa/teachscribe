@@ -12,7 +12,7 @@ import 'react-native-reanimated'
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme()
+  // const colorScheme = useColorScheme()
   const [loaded] = useFonts({
     'Poppins-Black': require('../assets/fonts/Poppins-Black.otf'),
     'Poppins-Bold': require('../assets/fonts/Poppins-Bold.otf'),
@@ -36,7 +36,7 @@ export default function RootLayout() {
 
   return (
     <SessionProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={DefaultTheme}>
         <GestureHandlerRootView>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
