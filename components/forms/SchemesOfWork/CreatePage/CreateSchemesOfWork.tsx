@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Alert } from 'react-native'
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps'
 
 import {
@@ -48,10 +48,49 @@ export default function CreateSchemesOfWork() {
     setSowData((prevData) => ({ ...prevData, ...newData }))
   }
 
+  const validateSOWData = (data: SOWData) => {
+    type RequiredFields = Pick<SOWData, 'subject' | 'grade' | 'term' | 'year' | 'periodsPerWeek'>
+
+    const requiredFields: Record<keyof RequiredFields, string> = {
+      subject: 'Subject',
+      grade: 'Grade/Class',
+      term: 'Term',
+      year: 'Year',
+      periodsPerWeek: 'Periods Per Week',
+    }
+
+    const missingFields = []
+
+    for (const [key, label] of Object.entries(requiredFields) as [keyof RequiredFields, string][]) {
+      if (!data[key] || data[key].trim().length === 0) {
+        missingFields.push(label)
+      }
+    }
+
+    if (data.entries.length === 0) {
+      missingFields.push('Weekly Entries (at least one required)')
+    }
+
+    return {
+      isValid: missingFields.length === 0,
+      missingFields,
+    }
+  }
+
   const handleSubmit = () => {
-    console.log('Submitting schemes of work data:', sowData)
-    addNewItem('schemes_of_work', sowData)
-    router.push(`/(lesson)/creating_document`)
+    const validation = validateSOWData(sowData)
+
+    if (validation.isValid) {
+      console.log('Submitting schemes of work data:', sowData)
+      addNewItem('schemes_of_work', sowData)
+      router.push(`/(lesson)/creating_document`)
+    } else {
+      Alert.alert(
+        'Incomplete Schemes of Work',
+        `Please fill in the following required fields:\n\n${validation.missingFields.join('\n')}`,
+        [{ text: 'OK', style: 'default' }]
+      )
+    }
   }
   return (
     <ProgressSteps

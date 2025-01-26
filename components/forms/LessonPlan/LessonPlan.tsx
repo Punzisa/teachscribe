@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Alert } from 'react-native'
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps'
 
 import {
@@ -71,10 +71,73 @@ export default function LessonPlan() {
     setLessonData((prevData) => ({ ...prevData, ...newData }))
   }
 
+  const validateLessonData = (data: LessonData) => {
+    type RequiredFields = Pick<
+      LessonData,
+      | 'title'
+      | 'class'
+      | 'date'
+      | 'duration'
+      | 'objectives'
+      | 'majorLearningOutcome'
+      | 'activities'
+      | 'learningDevelopmentEntries'
+      | 'resources'
+      | 'evidenceOfAttainment'
+      | 'teacherEvaluation'
+      | 'pupilEvaluation'
+      | 'rationale'
+    >
+
+    const requiredFields: Record<keyof RequiredFields, string> = {
+      title: 'Lesson Title',
+      class: 'Class',
+      date: 'Date',
+      duration: 'Duration',
+      objectives: 'Learning Objectives',
+      majorLearningOutcome: 'Learning Outcomes',
+      activities: 'Teaching Methods',
+      learningDevelopmentEntries: 'Learning Development Activities',
+      resources: 'Resources',
+      evidenceOfAttainment: 'Evidence of Attainment',
+      teacherEvaluation: 'Teacher Evaluation',
+      pupilEvaluation: 'Pupil Evaluation',
+      rationale: 'Rationale',
+    }
+
+    const missingFields = []
+
+    for (const [key, label] of Object.entries(requiredFields) as [keyof RequiredFields, string][]) {
+      if (!data[key] || (Array.isArray(data[key]) && data[key].length === 0) || data[key] === '') {
+        missingFields.push(label)
+      }
+    }
+
+    return {
+      isValid: missingFields.length === 0,
+      missingFields,
+    }
+  }
+
   const handleSubmit = () => {
-    console.log('Submitting lesson data:', lessonData)
-    addNewItem('lessons', lessonData)
-    router.push(`/(lesson)/creating_document`)
+    const validation = validateLessonData(lessonData)
+
+    if (validation.isValid) {
+      console.log('Submitting lesson data:', lessonData)
+      addNewItem('lessons', lessonData)
+      router.push(`/(lesson)/creating_document`)
+    } else {
+      Alert.alert(
+        'Incomplete Lesson Plan',
+        `Please fill in the following required fields:\n\n${validation.missingFields.join('\n')}`,
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ]
+      )
+    }
   }
   return (
     <ProgressSteps

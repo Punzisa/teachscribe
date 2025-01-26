@@ -46,7 +46,37 @@ export default function CreateRecordsOfWork() {
     setRowData((prevData) => ({ ...prevData, ...newData }))
   }
 
+  const validateROWData = (data: ROWData): string[] => {
+    const errors: string[] = []
+
+    // Validate basic fields
+    if (!data.subject.trim()) errors.push('Subject is required')
+    if (!data.grade.trim()) errors.push('Grade is required')
+    if (!data.term.trim()) errors.push('Term is required')
+    if (!data.year.trim()) errors.push('Year is required')
+
+    // Validate entries
+    if (data.entries.length === 0) {
+      errors.push('At least one weekly entry is required')
+    } else {
+      data.entries.forEach((entry, index) => {
+        if (!entry.week.trim()) errors.push(`Week is required for entry ${index + 1}`)
+        if (!entry.workCovered.trim())
+          errors.push(`Work covered is required for entry ${index + 1}`)
+      })
+    }
+
+    return errors
+  }
+
   const handleSubmit = () => {
+    const validationErrors = validateROWData(rowData)
+
+    if (validationErrors.length > 0) {
+      alert('Please fix the following errors:\n\n' + validationErrors.join('\n'))
+      return
+    }
+
     console.log('Submitting schemes of work data:', rowData)
     addNewItem('records_of_work', rowData)
     router.push(`/(lesson)/creating_document`)
