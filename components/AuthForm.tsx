@@ -1,13 +1,13 @@
+import { useEffect } from 'react'
 import AppButton from '@/components/Button'
 import FormField from '@/components/forms/FormField'
 import SocialLoginButtons from '@/components/SocialLoginButtons'
 import { socialLoginIcon } from '@/constants/Colors'
 import { StyledText, StyledView } from '@/constants/nativewindWrapper'
-import { useSession } from '@/context/auth'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { router } from 'expo-router'
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { GestureResponderEvent } from 'react-native'
 import * as yup from 'yup'
 
@@ -22,9 +22,16 @@ interface AuthFormProps {
   onSubmit: (data: FormValues) => void
   isSignUp: boolean
   schema: yup.AnyObjectSchema
+  onCredentialsChange?: (data: { email: string; password: string }) => void
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ title, onSubmit, isSignUp, schema }) => {
+const AuthForm: React.FC<AuthFormProps> = ({
+  title,
+  onSubmit,
+  isSignUp,
+  schema,
+  onCredentialsChange,
+}) => {
   const { control, handleSubmit } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -34,12 +41,19 @@ const AuthForm: React.FC<AuthFormProps> = ({ title, onSubmit, isSignUp, schema }
     },
     mode: 'onChange',
   })
-  const { signIn } = useSession()
+
+  const email = useWatch({ control, name: 'email' })
+  const password = useWatch({ control, name: 'password' })
+
+  useEffect(() => {
+    if (onCredentialsChange) {
+      onCredentialsChange({ email, password })
+    }
+  }, [email, password, onCredentialsChange])
 
   const handleSocialSign = (event: GestureResponderEvent) => {
     console.log(`Sign in with ${event}`)
 
-    signIn()
     router.replace('/(tabs)')
   }
   return (
