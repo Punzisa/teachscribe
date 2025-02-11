@@ -22,13 +22,14 @@ const InitialLayout = () => {
     const inTabsGroup = segments[0] === '(auth)'
 
     console.log('User changed: ', isSignedIn)
+    console.log('In auth group: ', inTabsGroup)
 
     if (isSignedIn && !inTabsGroup) {
       router.replace('/(tabs)')
     } else if (!isSignedIn) {
       router.replace('/(auth)')
     }
-  }, [isSignedIn])
+  }, [isSignedIn, isLoaded])
 
   return <Slot />
 }

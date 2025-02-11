@@ -1,5 +1,4 @@
 import { router } from 'expo-router'
-import { GestureResponderEvent } from 'react-native'
 
 import AuthScreen from '@/components/AuthScreen'
 import { socialLoginIcon } from '@/constants/Colors'
@@ -7,8 +6,6 @@ import { useSession } from '@/context/auth'
 import React from 'react'
 
 const Index = () => {
-  const { signIn } = useSession()
-
   const handleEmailSignIn = (key: string) => {
     // Add your sign in with email logic here
     console.log(`Sign in with ${key} clicked`)
