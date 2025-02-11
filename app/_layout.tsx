@@ -1,15 +1,37 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack } from 'expo-router'
+import { Slot, useRouter, useSegments } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { tokenCache } from '@/cache'
-import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo'
+import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
+
+const InitialLayout = () => {
+  const { isLoaded, isSignedIn } = useAuth()
+  const segments = useSegments()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoaded) return
+
+    const inTabsGroup = segments[0] === '(auth)'
+
+    console.log('User changed: ', isSignedIn)
+
+    if (isSignedIn && !inTabsGroup) {
+      router.replace('/(tabs)')
+    } else if (!isSignedIn) {
+      router.replace('/(auth)')
+    }
+  }, [isSignedIn])
+
+  return <Slot />
+}
 
 export default function RootLayout() {
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
@@ -43,25 +65,7 @@ export default function RootLayout() {
       <ClerkLoaded>
         <ThemeProvider value={DefaultTheme}>
           <GestureHandlerRootView>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(lesson)" options={{ headerShown: false }} />
-              <Stack.Screen name="(schemes_of_work)" options={{ headerShown: false }} />
-              <Stack.Screen name="(records_of_work)" options={{ headerShown: false }} />
-
-              <Stack.Screen name="(homework_sheets)" options={{ headerShown: false }} />
-
-              <Stack.Screen
-                name="(profile)"
-                options={{
-                  headerShown: true,
-                  headerTitle: 'Profile',
-                  headerBackVisible: true,
-                }}
-              />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <InitialLayout />
           </GestureHandlerRootView>
         </ThemeProvider>
       </ClerkLoaded>

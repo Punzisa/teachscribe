@@ -9,13 +9,6 @@ import React from 'react'
 const Index = () => {
   const { signIn } = useSession()
 
-  const handleSubmit = (event: GestureResponderEvent) => {
-    console.log(`Sign in with ${event}`)
-
-    signIn()
-    router.replace('/(tabs)')
-  }
-
   const handleEmailSignIn = (key: string) => {
     // Add your sign in with email logic here
     console.log(`Sign in with ${key} clicked`)
@@ -26,7 +19,6 @@ const Index = () => {
       <AuthScreen
         uniqueKey="home"
         title="Sign in with"
-        handleSubmit={handleSubmit}
         handleEmailSignIn={handleEmailSignIn}
         socialLoginIcon={socialLoginIcon}
         link="/(auth)/sign-up-options"
