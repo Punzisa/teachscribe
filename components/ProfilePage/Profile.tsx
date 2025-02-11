@@ -17,6 +17,9 @@ import { useSession } from '@/context/auth'
 import * as ImagePicker from 'expo-image-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject, saveData } from '@/context/storage'
+import { Ionicons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useAuth } from '@clerk/clerk-expo'
 
 export interface ProfileData {
   salutation: string
@@ -29,7 +32,7 @@ export interface ProfileData {
 const Profile = () => {
   const [imageUri, setImageUri] = useState<string | null>(null)
 
-  const { signOut } = useSession()
+  const { signOut } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [salutation, setSalutation] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -143,19 +146,56 @@ const Profile = () => {
     )
   }
 
-  const renderField = (label: string, value: string, onChangeText: (text: string) => void) => {
+  const renderAvatar = () => {
+    if (imageUri) {
+      return (
+        <Avatar
+          source={{ uri: imageUri }}
+          size={120}
+          badgeProps={{
+            onPress: editAvatar,
+            size: 36,
+            icon: icon,
+            iconStyle: styles.badgeIcon,
+            containerStyle: styles.badgeContainer,
+          }}
+          badgePosition="BOTTOM_RIGHT"
+        />
+      )
+    }
+
+    return (
+      <View style={styles.placeholderAvatar}>
+        <MaterialCommunityIcons name="account" size={60} color="white" />
+        <TouchableOpacity style={styles.editAvatarButton} onPress={editAvatar}>
+          <MaterialCommunityIcons name="camera" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  const renderField = (
+    label: string,
+    value: string,
+    onChangeText: (text: string) => void,
+    icon: string
+  ) => {
     return (
       <View style={styles.fieldContainer}>
-        <Text style={styles.label}>{label}:</Text>
+        <View style={styles.labelContainer}>
+          <Ionicons name={icon} size={20} color={Colors.primary} />
+          <Text style={styles.label}>{label}</Text>
+        </View>
         {isEditing ? (
           <TextInput
             style={styles.input}
             value={value}
             onChangeText={onChangeText}
             placeholder={`Enter ${label.toLowerCase()}`}
+            placeholderTextColor="#A0AEC0"
           />
         ) : (
-          <Text style={styles.value}>{value}</Text>
+          <Text style={styles.value}>{value || `No ${label.toLowerCase()} provided`}</Text>
         )}
       </View>
     )
@@ -164,21 +204,23 @@ const Profile = () => {
   const renderSalutation = () => {
     return (
       <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Salutation:</Text>
+        <View style={styles.labelContainer}>
+          <Ionicons name="person-outline" size={20} color={Colors.primary} />
+          <Text style={styles.label}>Salutation</Text>
+        </View>
         {isEditing ? (
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={salutation}
               onValueChange={(itemValue) => setSalutation(itemValue)}
-              style={styles.picker}
-              mode="dropdown">
+              style={styles.picker}>
               <Picker.Item label="Mr." value="Mr." />
               <Picker.Item label="Mrs." value="Mrs." />
               <Picker.Item label="Ms." value="Ms." />
             </Picker>
           </View>
         ) : (
-          <Text style={styles.value}>{salutation}</Text>
+          <Text style={styles.value}>{salutation || 'No salutation selected'}</Text>
         )}
       </View>
     )
@@ -188,32 +230,20 @@ const Profile = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}>
-        <Avatar
-          source={{ uri: imageUri! }}
-          size={150}
-          badgeProps={{
-            onPress: editAvatar,
-            size: 40,
-            icon: icon,
-            iconStyle: { backgroundColor: Colors.primary },
-            containerStyle: {
-              padding: 40,
-            },
-          }}
-          badgePosition="BOTTOM_RIGHT"
-        />
-        {renderSalutation()}
-        {renderField('First Name', firstName, setFirstName)}
-        {renderField('Last Name', lastName, setLastName)}
-        {renderField('School Name', schoolName, setSchoolName)}
-        {renderField('Phone Number', phoneNumber, setPhoneNumber)}
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={styles.avatarContainer}>{renderAvatar()}</View>
+
+        <View style={styles.formContainer}>
+          {renderSalutation()}
+          {renderField('First Name', firstName, setFirstName, 'person-outline')}
+          {renderField('Last Name', lastName, setLastName, 'people-outline')}
+          {renderField('School Name', schoolName, setSchoolName, 'school-outline')}
+          {renderField('Phone Number', phoneNumber, setPhoneNumber, 'call-outline')}
+        </View>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: isEditing ? Colors.secondary : '#007AFF' }]}
+            style={[styles.button, isEditing ? styles.saveButton : styles.editButton]}
             onPress={() => {
               if (isEditing) {
                 handleSave()
@@ -221,26 +251,28 @@ const Profile = () => {
                 setIsEditing(true)
               }
             }}>
+            <Ionicons
+              name={isEditing ? 'save-outline' : 'create-outline'}
+              size={20}
+              color="white"
+            />
             <Text style={styles.buttonText}>{isEditing ? 'Save Changes' : 'Edit Profile'}</Text>
           </TouchableOpacity>
 
           {isEditing && (
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: '#666' }]}
+              style={[styles.button, styles.cancelButton]}
               onPress={() => {
                 setIsEditing(false)
-                // Reset values to initial state
-                setSalutation(salutation) // Add this
-                setFirstName(firstName)
-                setLastName(lastName)
-                setSchoolName(schoolName)
-                setPhoneNumber(phoneNumber)
+                loadProfile()
               }}>
+              <Ionicons name="close-outline" size={20} color="white" />
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
+            <Ionicons name="log-out-outline" size={20} color="white" />
             <Text style={styles.buttonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
@@ -252,67 +284,156 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
-    paddingHorizontal: 10,
+    backgroundColor: '#F7FAFC',
   },
-  scrollContainer: {
-    alignItems: 'center',
+  scrollView: {
+    flex: 1,
+  },
+  header: {
     padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#718096',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    paddingVertical: 24,
+  },
+  badgeIcon: {
+    backgroundColor: Colors.primary,
+  },
+  badgeContainer: {
+    padding: 36,
+  },
+  formContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    margin: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   fieldContainer: {
-    width: '100%',
-    marginVertical: 5,
+    marginBottom: 16,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '500',
+    color: '#4A5568',
   },
   value: {
     fontSize: 16,
-    color: '#666',
-    paddingVertical: 8,
+    color: '#2D3748',
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    backgroundColor: '#F7FAFC',
+    borderRadius: 8,
   },
   input: {
+    fontSize: 16,
+    color: '#2D3748',
+    backgroundColor: '#F7FAFC',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#E2E8F0',
     borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    backgroundColor: 'white',
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 20,
-    gap: 10,
-  },
-  button: {
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  signOutButton: {
-    backgroundColor: 'red',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 12,
   },
   pickerContainer: {
+    backgroundColor: '#F7FAFC',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#E2E8F0',
     borderRadius: 8,
-    backgroundColor: 'white',
-    marginTop: 5,
+    marginTop: 4,
   },
   picker: {
-    width: '100%',
+    height: 50,
+  },
+  buttonContainer: {
+    padding: 16,
+    gap: 12,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 8,
+    gap: 8,
+  },
+  editButton: {
+    backgroundColor: Colors.primary,
+  },
+  saveButton: {
+    backgroundColor: '#48BB78',
+  },
+  cancelButton: {
+    backgroundColor: '#718096',
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E53E3E',
+    padding: 14,
+    borderRadius: 8,
+    gap: 8,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  placeholderAvatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  editAvatarButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: Colors.primary,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 })
 

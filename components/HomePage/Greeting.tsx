@@ -1,9 +1,12 @@
 import { primary } from '@/constants/Colors'
 import React, { useState, useEffect } from 'react'
-import { Text, StyleSheet, View, Image } from 'react-native'
+import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
+import { useExpoRouter } from 'expo-router/build/global-state/router-store'
 
 interface ProfileGreetingData {
   salutation: string
@@ -12,7 +15,7 @@ interface ProfileGreetingData {
 
 const Avatar = () => {
   const [imageUri, setImageUri] = useState<string | null>(null)
-
+  const router = useExpoRouter()
   useEffect(() => {
     const loadImage = async () => {
       try {
@@ -35,7 +38,15 @@ const Avatar = () => {
   }, [])
   return (
     <View style={styles.avatarContainer}>
-      <Image source={{ uri: imageUri! }} style={styles.avatarImage} resizeMode="cover" />
+      <TouchableOpacity onPress={() => router.push('/profile')}>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.avatarImage} resizeMode="cover" />
+        ) : (
+          <View style={styles.avatarPlaceholder}>
+            <MaterialCommunityIcons name="account" size={40} color="white" />
+          </View>
+        )}
+      </TouchableOpacity>
     </View>
   )
 }
@@ -99,8 +110,8 @@ const Greeting = () => {
   return (
     <LinearGradient
       colors={[primary, '#6fe3e1']}
-      start={{ x: 0.2, y: 0 }}
-      end={{ x: 1, y: 0.9 }}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}>
       <View style={styles.topSection}>
         <View>
@@ -119,41 +130,66 @@ const styles = StyleSheet.create({
   avatarImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 80 / 2,
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   avatarContainer: {
     width: 80,
     height: 80,
-    borderColor: 'white',
-    borderWidth: 2,
-    borderRadius: 80 / 2,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
+    borderWidth: 3,
+    borderRadius: 40,
+    padding: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    elevation: 5,
+  },
+  avatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 40,
   },
   topSection: {
     display: 'flex',
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 15,
     flexWrap: 'wrap-reverse',
-    marginBottom: 10,
+    marginBottom: 15,
   },
   container: {
-    paddingHorizontal: 20,
-    paddingVertical: 40,
-    color: 'white',
-    borderRadius: 20,
-    marginTop: 5,
-    marginBottom: 20,
-    marginHorizontal: 10,
+    paddingHorizontal: 25,
+    paddingVertical: 45,
+    borderRadius: 25,
+    marginTop: 10,
+    marginBottom: 25,
+    marginHorizontal: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
   },
   headerText: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '800',
     color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+    marginBottom: 5,
   },
   greeting: {
-    fontSize: 18,
-    color: 'white',
+    fontSize: 20,
+    color: 'rgba(255, 255, 255, 0.9)',
+    textTransform: 'capitalize',
+    letterSpacing: 0.5,
   },
 })
 

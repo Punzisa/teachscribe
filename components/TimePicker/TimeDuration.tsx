@@ -67,12 +67,13 @@ const TimeDuration = ({ onInputChange, setTextValue }: Props) => {
   }, [setTextValue])
 
   return (
-    <>
+    <View>
       <View style={{ alignItems: 'center', backgroundColor: 'white' }}>
         <Button
           outline
           outlineColor={lightGrey}
           label={text === '' ? 'Lesson Duration' : ''}
+          labelStyle={{ color: '#797979' }}
           borderRadius={7}
           style={{ height: 50, width: '100%', justifyContent: 'flex-start' }}
           onPress={() => setShowPicker(true)}>
@@ -95,7 +96,7 @@ const TimeDuration = ({ onInputChange, setTextValue }: Props) => {
           theme: 'light',
         }}
       />
-    </>
+    </View>
   )
 }
 

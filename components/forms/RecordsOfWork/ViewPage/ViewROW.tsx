@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
 import { ROWData } from '../CreatePage/CreateRecordsOfWork'
+import { Colors } from '@/constants/Colors'
 
 interface TeacherData {
   salutation: string
@@ -48,38 +49,101 @@ export default function ViewROW() {
 
     return () => subscription.unsubscribe()
   }, [])
+  const renderInfoItem = (icon: string, label: string, value: string) => (
+    <View style={styles.infoItem}>
+      <Ionicons name={icon} size={20} color={Colors.primary} />
+      <Text style={styles.infoLabel}>{label}:</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  )
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.titleAndButton}>
-        <Text style={styles.title}>{recordOfWork.subject}</Text>
-        <TouchableOpacity onPress={closeButtonPressed}>
-          <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.title}>{recordOfWork.subject}</Text>
+          <Text style={styles.subtitle}>Record of Work Details</Text>
+        </View>
+        <TouchableOpacity style={styles.closeButton} onPress={closeButtonPressed}>
+          <Ionicons name="close" size={24} color={Colors.primary} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.subtitle}>Term: {recordOfWork.term}</Text>
-      <Text style={styles.subtitle}>Subject: {recordOfWork.subject}</Text>
-      <Text style={styles.subtitle}>Grade: {recordOfWork.grade}</Text>
-      <Text style={styles.subtitle}>Year: {recordOfWork.year}</Text>
-      <Text style={styles.subtitle}>Classroom: {recordOfWork.grade}</Text>
-      <Text style={styles.subtitle}>
-        Teacher: {teacherData?.salutation} {teacherData?.firstName} {teacherData?.lastName}
-      </Text>
 
-      {recordOfWork.entries.map((entry) => (
-        <View key={entry.id} style={styles.section}>
-          <Text style={styles.sectionTitle}>{entry.week}</Text>
-          <Text style={styles.subtitle}>Work Covered: {entry.workCovered}</Text>
-          <Text style={styles.subtitle}>
-            Comments on Resources/References: {entry.commentsOnResourcesReferences}
-          </Text>
-          <Text style={styles.subtitle}>Method Strategies: {entry.methodStrategies}</Text>
-          <Text style={styles.subtitle}>
-            Comments on Learners' Progress: {entry.commentsOnLearnersProgress}
-          </Text>
-
-          <Text style={styles.subtitle}>HOD's Remarks: {entry.hodRemarks}</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="information-circle-outline" size={24} color={Colors.primary} />
+          <Text style={styles.cardTitle}>Basic Information</Text>
         </View>
-      ))}
+
+        {renderInfoItem('calendar-outline', 'Term', recordOfWork.term)}
+        {renderInfoItem('book-outline', 'Subject', recordOfWork.subject)}
+        {renderInfoItem('school-outline', 'Grade', recordOfWork.grade)}
+        {renderInfoItem('calendar-number-outline', 'Year', recordOfWork.year)}
+        {renderInfoItem('business-outline', 'Classroom', recordOfWork.grade)}
+        {renderInfoItem(
+          'person-outline',
+          'Teacher',
+          `${teacherData?.salutation} ${teacherData?.firstName} ${teacherData?.lastName}`
+        )}
+      </View>
+
+      <View style={styles.entriesContainer}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="list-outline" size={24} color={Colors.primary} />
+          <Text style={styles.sectionTitle}>Weekly Records</Text>
+        </View>
+
+        {recordOfWork.entries.map((entry, index) => (
+          <View key={entry.id} style={styles.weekCard}>
+            <View style={styles.weekBadge}>
+              <Ionicons name="time-outline" size={20} color={Colors.primary} />
+              <Text style={styles.weekText}>{entry.week}</Text>
+            </View>
+
+            <View style={styles.entryContent}>
+              <View style={styles.entryItem}>
+                <View style={styles.entryHeader}>
+                  <Ionicons name="checkmark-circle-outline" size={20} color={Colors.primary} />
+                  <Text style={styles.entryLabel}>Work Covered</Text>
+                </View>
+                <Text style={styles.entryText}>{entry.workCovered}</Text>
+              </View>
+
+              <View style={styles.entryItem}>
+                <View style={styles.entryHeader}>
+                  <Ionicons name="library-outline" size={20} color={Colors.primary} />
+                  <Text style={styles.entryLabel}>Resources & References</Text>
+                </View>
+                <Text style={styles.entryText}>{entry.commentsOnResourcesReferences}</Text>
+              </View>
+
+              <View style={styles.entryItem}>
+                <View style={styles.entryHeader}>
+                  <Ionicons name="bulb-outline" size={20} color={Colors.primary} />
+                  <Text style={styles.entryLabel}>Method Strategies</Text>
+                </View>
+                <Text style={styles.entryText}>{entry.methodStrategies}</Text>
+              </View>
+
+              <View style={styles.entryItem}>
+                <View style={styles.entryHeader}>
+                  <Ionicons name="trending-up-outline" size={20} color={Colors.primary} />
+                  <Text style={styles.entryLabel}>Learners' Progress</Text>
+                </View>
+                <Text style={styles.entryText}>{entry.commentsOnLearnersProgress}</Text>
+              </View>
+
+              <View style={[styles.entryItem, styles.remarksContainer]}>
+                <View style={styles.entryHeader}>
+                  <Ionicons name="chatbox-outline" size={20} color="#4CAF50" />
+                  <Text style={[styles.entryLabel, { color: '#4CAF50' }]}>HOD's Remarks</Text>
+                </View>
+                <Text style={styles.remarksText}>{entry.hodRemarks}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
     </ScrollView>
   )
 }
@@ -87,57 +151,141 @@ export default function ViewROW() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 20,
-    paddingBottom: 100,
+    backgroundColor: '#F7FAFC',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  titles: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  titleAndButton: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 4,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 4,
+    color: '#718096',
   },
-  section: {
-    marginTop: 16,
+  closeButton: {
+    padding: 8,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    margin: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  infoLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+    width: 100,
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2D3748',
+  },
+  entriesContainer: {
+    padding: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2D3748',
   },
-  activityType: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginBottom: 4,
+  weekCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  activity: {
-    marginBottom: 8,
-  },
-  activityTitle: {
-    fontWeight: 'bold',
-  },
-  teachersSignature: {
-    flex: 1,
+  weekBadge: {
     flexDirection: 'row',
-    gap: 16,
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    backgroundColor: '#EDF2F7',
+  },
+  weekText: {
     fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  entryContent: {
+    padding: 16,
+    gap: 20,
+  },
+  entryItem: {
+    gap: 8,
+  },
+  entryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  entryLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+  },
+  entryText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
+    paddingLeft: 28,
+  },
+  remarksContainer: {
+    backgroundColor: '#F0FDF4',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#4CAF50',
+  },
+  remarksText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
+    paddingLeft: 28,
+    fontStyle: 'italic',
   },
 })

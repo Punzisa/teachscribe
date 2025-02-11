@@ -2,26 +2,22 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon'
 import { useSession } from '@/context/auth'
 import { Redirect, Tabs, usePathname } from 'expo-router'
 import React from 'react'
-import { Platform, StyleSheet, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import { primary } from '@/constants/Colors'
 import FabGroup from '@/components/HomePage/FabGroup'
 import { tabBarHeightAndPadding } from '@/constants/TabBarHeightAndPadding'
 
 export default function TabLayout() {
-  const { session, isLoading } = useSession()
+  const { isLoading } = useSession()
   const pathname = usePathname()
 
-  // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
-    return <Text>Loading...</Text>
-  }
-
-  // Only require authentication within the (app) group's layout as users
-  // need to be able to access the (auth) group and sign in again.
-  if (!session) {
-    // On web, static rendering will stop here as the user is not authenticated
-    // in the headless Node process that the pages are rendered in.
-    return <Redirect href="/sign-in" />
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={primary} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    )
   }
 
   return (
@@ -29,7 +25,7 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: primary,
-          tabBarInactiveTintColor: primary,
+          tabBarInactiveTintColor: 'rgba(0, 0, 0, 0.5)',
           headerShown: false,
           tabBarStyle: {
             height:
@@ -40,6 +36,25 @@ export default function TabLayout() {
               Platform.OS === 'ios'
                 ? tabBarHeightAndPadding.iosTabBarPadding
                 : tabBarHeightAndPadding.androidTabBarPadding,
+            backgroundColor: 'white',
+            borderTopWidth: 1,
+            borderTopColor: 'rgba(0, 0, 0, 0.1)',
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: -2,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            elevation: 10,
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '600',
+            marginBottom: Platform.OS === 'ios' ? 0 : 8,
+          },
+          tabBarIconStyle: {
+            marginTop: Platform.OS === 'ios' ? 0 : 8,
           },
         }}>
         <Tabs.Screen
@@ -47,7 +62,13 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             tabBarIcon: ({ focused }) => (
-              <TabBarIcon name={focused ? 'home' : 'home-outline'} color={primary} />
+              <View style={styles.iconContainer}>
+                <TabBarIcon
+                  name={focused ? 'home' : 'home-outline'}
+                  color={focused ? primary : 'rgba(0, 0, 0, 0.5)'}
+                  size={24}
+                />
+              </View>
             ),
           }}
         />
@@ -56,7 +77,13 @@ export default function TabLayout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ focused }) => (
-              <TabBarIcon name={focused ? 'person' : 'person-outline'} color={primary} />
+              <View style={styles.iconContainer}>
+                <TabBarIcon
+                  name={focused ? 'person' : 'person-outline'}
+                  color={focused ? primary : 'rgba(0, 0, 0, 0.5)'}
+                  size={24}
+                />
+              </View>
             ),
           }}
         />
@@ -68,8 +95,8 @@ export default function TabLayout() {
             {
               bottom:
                 Platform.OS === 'ios'
-                  ? tabBarHeightAndPadding.iosTabBarHeight
-                  : tabBarHeightAndPadding.androidTabBarHeight,
+                  ? tabBarHeightAndPadding.iosTabBarHeight + 10
+                  : tabBarHeightAndPadding.androidTabBarHeight + 10,
               paddingBottom:
                 Platform.OS === 'ios'
                   ? tabBarHeightAndPadding.iosTabBarPadding
@@ -84,9 +111,34 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: primary,
+    fontWeight: '600',
+  },
   fabContainer: {
     position: 'absolute',
     right: 20,
     zIndex: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Platform.OS === 'ios' ? 5 : 0,
   },
 })

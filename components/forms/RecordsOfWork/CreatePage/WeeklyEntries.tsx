@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
-
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { ROWData, ROWEntry } from './CreateRecordsOfWork'
 import { Colors } from '@/constants/Colors'
 import AddWeekEntry from './AddWeekEntry'
@@ -25,33 +25,51 @@ const WeeklyEntries: React.FC<ROWProps> = ({ rowData, updateSOWData }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ alignItems: 'center' }}>
-        <TouchableOpacity style={styles.newEntryButton} onPress={toggleShowNewEntryModal}>
-          <Text style={styles.newEntryButtonText}>Add</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.headerTitle}>Weekly Progress Records</Text>
+          <Text style={styles.headerSubtitle}>Document and track learner progress</Text>
+        </View>
+        <TouchableOpacity style={styles.addButton} onPress={toggleShowNewEntryModal}>
+          <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      {rowData.entries.length === 0 ? (
-        <View style={styles.noEntryContainer}>
-          <Text style={{ textAlign: 'center' }}>No Entries Added</Text>
-        </View>
-      ) : (
-        <View>
-          {rowData.entries.map((entry) => (
-            <View key={entry.id} style={styles.entryContainer}>
-              <View style={{ flexDirection: 'column', gap: 4, width: '80%' }}>
-                <Text style={styles.weekText}>Week: {entry.week}</Text>
-                <Text style={{ flexWrap: 'wrap' }}>{entry.commentsOnLearnersProgress}</Text>
-              </View>
-              <>
-                <TouchableOpacity onPress={() => handleDeleteEntry(entry)}>
-                  <Text style={styles.deleteButtonText}>Delete</Text>
+
+      <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
+        {rowData.entries.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <Ionicons name="documents-outline" size={48} color={Colors.primary} />
+            <Text style={styles.emptyStateTitle}>No Entries Yet</Text>
+            <Text style={styles.emptyStateDescription}>
+              Add your first weekly progress entry to get started
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.entriesList}>
+            {rowData.entries.map((entry) => (
+              <View key={entry.id} style={styles.entryCard}>
+                <View style={styles.weekBadge}>
+                  <Ionicons name="time-outline" size={16} color={Colors.primary} />
+                  <Text style={styles.weekBadgeText}>Week {entry.week}</Text>
+                </View>
+
+                <View style={styles.entryContent}>
+                  <Text style={styles.entryTitle}>Progress Comments</Text>
+                  <Text style={styles.entryText}>{entry.commentsOnLearnersProgress}</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteEntry(entry)}>
+                  <Ionicons name="trash-outline" size={20} color="#DC2626" />
                 </TouchableOpacity>
-              </>
-            </View>
-          ))}
-        </View>
-      )}
+              </View>
+            ))}
+          </View>
+        )}
+      </ScrollView>
+
       {showNewEntryModal && (
         <AddWeekEntry
           isVisible={showNewEntryModal}
@@ -64,41 +82,118 @@ const WeeklyEntries: React.FC<ROWProps> = ({ rowData, updateSOWData }) => {
   )
 }
 
-export default WeeklyEntries
-
 const styles = StyleSheet.create({
-  noEntryContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
   },
-  newEntryButton: {
-    backgroundColor: Colors.primary,
-    marginBottom: 20,
-    width: 70,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
+  header: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
-  newEntryButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
-  entryContainer: {
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#718096',
+  },
+  addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    borderWidth: 0.2,
-    borderRadius: 3,
-    borderColor: '#222',
-    padding: 10,
-    marginBottom: 10,
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
   },
-  weekText: {
-    fontWeight: '500',
+
+  contentContainer: {
+    flex: 1,
+    padding: 16,
   },
-  deleteButtonText: {
-    color: 'red',
+  emptyStateContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateDescription: {
+    fontSize: 14,
+    color: '#718096',
+    textAlign: 'center',
+  },
+  entriesList: {
+    gap: 16,
+  },
+  entryCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  weekBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: `${Colors.primary}15`,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  weekBadgeText: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  entryContent: {
+    gap: 8,
+    paddingRight: 24,
+  },
+  entryTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4A5568',
+  },
+  entryText: {
+    fontSize: 15,
+    color: '#2D3748',
+    lineHeight: 22,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    padding: 8,
   },
 })
+
+export default WeeklyEntries

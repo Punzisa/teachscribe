@@ -7,46 +7,74 @@ import { dataChangeSubject, loadList } from '@/context/storage'
 import { ProfileData } from '../ProfilePage/Profile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { generateAndSharePDF } from '../LessonsPage/ExportLessonPdf'
+import { Ionicons } from '@expo/vector-icons'
 
-const DropDownButton = ({ title, onPress }: { title: string; onPress: any }) => {
+const ActionButton = ({
+  title,
+  icon,
+  onPress,
+  color,
+}: {
+  title: string
+  icon: string
+  onPress: any
+  color: string
+}) => {
   return (
-    <View>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={styles.buttonTitle}>{title}</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity style={[styles.actionButton, { backgroundColor: color }]} onPress={onPress}>
+      <Ionicons name={icon} size={16} color="white" />
+      <Text style={styles.actionButtonText}>{title}</Text>
+    </TouchableOpacity>
   )
 }
-
 const LessonCard: React.FC<{ lesson: LessonData; teacherProfile: ProfileData }> = ({
   lesson,
   teacherProfile,
 }) => {
   const router = useRouter()
+  const lessonDate = new Date(lesson.date)
+  const isToday = new Date().toDateString() === lessonDate.toDateString()
 
   return (
     <View style={styles.card}>
-      <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View>
+      <View style={styles.cardHeader}>
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateDay}>{lessonDate.getDate()}</Text>
+          <Text style={styles.dateMonth}>
+            {lessonDate.toLocaleString('default', { month: 'short' })}
+          </Text>
+        </View>
+        <View style={styles.lessonInfo}>
           <Text style={styles.cardTitle}>{lesson.title}</Text>
-          <Text style={styles.cardSubtitle}>{lesson.class}</Text>
-          <Text>{lesson.date.toDateString()}</Text>
+          <View style={styles.classContainer}>
+            <Ionicons name="school-outline" size={16} color={Colors.primary} />
+            <Text style={styles.classText}>{lesson.class}</Text>
+          </View>
+          {isToday && (
+            <View style={styles.todayBadge}>
+              <Text style={styles.todayText}>Today</Text>
+            </View>
+          )}
         </View>
-        <View>
-          <DropDownButton
-            title="View"
-            onPress={() =>
-              router.push({
-                pathname: '/(lesson)/view_lesson',
-                params: { lesson: JSON.stringify(lesson) },
-              })
-            }
-          />
-          <DropDownButton
-            title="Export"
-            onPress={() => generateAndSharePDF(lesson, teacherProfile!)}
-          />
-        </View>
+      </View>
+      <View style={styles.cardActions}>
+        <ActionButton
+          title="View"
+          icon="eye-outline"
+          color={Colors.primary}
+          onPress={() =>
+            router.push({
+              pathname: '/(lesson)/view_lesson',
+              params: { lesson: JSON.stringify(lesson) },
+            })
+          }
+        />
+        <ActionButton
+          title="Export"
+          icon="share-outline"
+          color="#4CAF50"
+          onPress={() => generateAndSharePDF(lesson, teacherProfile!)}
+        />
       </View>
     </View>
   )
@@ -118,98 +146,220 @@ const UpcomingLessons = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Upcoming Lessons</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Upcoming Lessons</Text>
+        <Text style={styles.headerSubtitle}>{filteredLessons?.length || 0} lessons scheduled</Text>
+      </View>
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={styles.filterContentContainer}>
+        contentContainerStyle={styles.filterContent}>
         {classrooms.map((classroom) => (
           <TouchableOpacity
             key={classroom}
-            style={[styles.pillButton, selectedClass === classroom && styles.pillButtonActive]}
+            style={[styles.filterButton, selectedClass === classroom && styles.filterButtonActive]}
             onPress={() => filterLessonsByClass(classroom)}>
+            <Ionicons
+              name="bookmark-outline"
+              size={16}
+              color={selectedClass === classroom ? 'white' : Colors.primary}
+            />
             <Text
               style={[
-                styles.pillButtonText,
-                selectedClass === classroom && styles.pillButtonTextActive,
+                styles.filterButtonText,
+                selectedClass === classroom && styles.filterButtonTextActive,
               ]}>
               {classroom}
             </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
-      {filteredLessons !== null &&
-        filteredLessons !== undefined &&
-        filteredLessons.map((item) => (
-          <LessonCard key={item.id} lesson={item} teacherProfile={teacherProfile!} />
-        ))}
+
+      <ScrollView style={styles.lessonsList} showsVerticalScrollIndicator={false}>
+        {filteredLessons?.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="calendar-outline" size={48} color={Colors.primary} />
+            <Text style={styles.emptyStateText}>No upcoming lessons</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Lessons will appear here when you create them
+            </Text>
+          </View>
+        ) : (
+          filteredLessons?.map((lesson) => (
+            <LessonCard key={lesson.id} lesson={lesson} teacherProfile={teacherProfile!} />
+          ))
+        )}
+      </ScrollView>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  buttonTitle: {
-    color: Colors.primary,
-    fontSize: 13,
-    textAlign: 'center',
-    marginBottom: 5,
-  },
   container: {
-    paddingHorizontal: 16,
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+    marginHorizontal: 10,
+    borderRadius: 10,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 16,
+  header: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#718096',
+  },
+  filterContainer: {
+    maxHeight: 60,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  filterContent: {
+    padding: 12,
+    gap: 8,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#EDF2F7',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  filterButtonActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.primary,
+  },
+  filterButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  lessonsList: {
+    flex: 1,
+    padding: 16,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 16,
     padding: 16,
-    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  dateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EDF2F7',
     borderRadius: 8,
-    elevation: 1,
+    padding: 8,
+    minWidth: 60,
+  },
+  dateDay: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  dateMonth: {
+    fontSize: 14,
+    color: '#718096',
+    textTransform: 'uppercase',
+  },
+  lessonInfo: {
+    flex: 1,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
-  cardSubtitle: {
-    fontSize: 16,
-  },
-  dropdown: {
-    marginTop: 8,
-  },
-  filterContainer: {
-    maxHeight: 50,
-    marginBottom: 16,
-  },
-  filterContentContainer: {
-    paddingHorizontal: 4,
-  },
-  pillButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginHorizontal: 4,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
-    borderWidth: 2,
-    borderColor: '#E5E7EB',
-    minWidth: 80,
+  classContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
   },
-  pillButtonActive: {
-    backgroundColor: '#3B82F6',
-    borderColor: '#2563EB',
+  classText: {
+    fontSize: 14,
+    color: Colors.primary,
   },
-  pillButtonText: {
+  todayBadge: {
+    backgroundColor: '#48BB78',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  todayText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  cardActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '500',
-    color: '#4B5563',
   },
-  pillButtonTextActive: {
-    color: '#FFFFFF',
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    gap: 12,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: '#718096',
+    textAlign: 'center',
   },
 })
 

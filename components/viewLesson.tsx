@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { LearningDevelopment, LessonData } from './forms/LessonPlan/LessonPlan'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
+import { Colors } from '@/constants/Colors'
 
 interface TeacherData {
   salutation: string
@@ -54,81 +55,109 @@ export default function ViewLesson() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  const renderInfoItem = (icon: string, label: string, value: string) => (
+    <View style={styles.infoItem}>
+      <Ionicons name={icon} size={20} color={Colors.primary} />
+      <Text style={styles.infoLabel}>{label}:</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  )
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.titleAndButton}>
-        <Text style={styles.title}>{lesson.title}</Text>
-        <TouchableOpacity onPress={closeButtonPressed}>
-          <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.title}>{lesson.title}</Text>
+          <Text style={styles.subtitle}>Lesson Plan Details</Text>
+        </View>
+        <TouchableOpacity style={styles.closeButton} onPress={closeButtonPressed}>
+          <Ionicons name="close" size={24} color={Colors.primary} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.subtitle}>Date: {lesson.date.toLocaleDateString()}</Text>
-      <Text style={styles.subtitle}>
-        Teacher Name: {teacherData?.salutation} {teacherData?.firstName} {teacherData?.lastName}
-      </Text>
-      <Text style={styles.subtitle}>
-        <Text style={styles.subSectionTitle}>Class:</Text> {lesson.class}
-      </Text>
-      <Text style={styles.subtitle}>Subject: {lesson.subject}</Text>
-      <Text style={styles.subtitle}>Time: {lesson.date.toLocaleTimeString()}</Text>
-      <Text style={styles.subtitle}>Duration: {lesson.duration}</Text>
-      <Text style={styles.subtitle}>Resources: {lesson.resources}</Text>
-      <Text style={styles.subtitle}>References: {lesson.references}</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text>{lesson.description}</Text>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Major Learning Outcome</Text>
-        <Text>{lesson.majorLearningOutcome}</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="information-circle-outline" size={24} color={Colors.primary} />
+          <Text style={styles.cardTitle}>Basic Information</Text>
+        </View>
+
+        {renderInfoItem('calendar-outline', 'Date', lesson.date.toLocaleDateString())}
+        {renderInfoItem(
+          'person-outline',
+          'Teacher',
+          `${teacherData?.salutation} ${teacherData?.firstName} ${teacherData?.lastName}`
+        )}
+        {renderInfoItem('school-outline', 'Class', lesson.class)}
+        {renderInfoItem('book-outline', 'Subject', lesson.subject)}
+        {renderInfoItem('time-outline', 'Time', lesson.date.toLocaleTimeString())}
+        {renderInfoItem('hourglass-outline', 'Duration', lesson.duration)}
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Evidence of Attainment</Text>
-        <Text>{lesson.evidenceOfAttainment}</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="library-outline" size={24} color={Colors.primary} />
+          <Text style={styles.cardTitle}>Resources & References</Text>
+        </View>
+        <View style={styles.resourcesContainer}>
+          <View style={styles.resourceItem}>
+            <Text style={styles.resourceLabel}>Resources:</Text>
+            <Text style={styles.resourceText}>{lesson.resources}</Text>
+          </View>
+          <View style={styles.resourceItem}>
+            <Text style={styles.resourceLabel}>References:</Text>
+            <Text style={styles.resourceText}>{lesson.references}</Text>
+          </View>
+        </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Rationale</Text>
-        <Text>{lesson.rationale}</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="document-text-outline" size={24} color={Colors.primary} />
+          <Text style={styles.cardTitle}>Lesson Details</Text>
+        </View>
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Description</Text>
+            <Text style={styles.detailText}>{lesson.description}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Major Learning Outcome</Text>
+            <Text style={styles.detailText}>{lesson.majorLearningOutcome}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Evidence of Attainment</Text>
+            <Text style={styles.detailText}>{lesson.evidenceOfAttainment}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Rationale</Text>
+            <Text style={styles.detailText}>{lesson.rationale}</Text>
+          </View>
+        </View>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Learning Development</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="git-branch-outline" size={24} color={Colors.primary} />
+          <Text style={styles.cardTitle}>Learning Development</Text>
+        </View>
         {lesson.learningDevelopmentEntries.map((entry: LearningDevelopment) => (
-          <View key={entry.id}>
-            <Text>Time: {entry.time}</Text>
-            <Text>Teacher Activities: {entry.teacherActivites}</Text>
-            <Text>Learner Activities: {entry.learnerActivities}</Text>
+          <View key={entry.id} style={styles.developmentEntry}>
+            <View style={styles.timeContainer}>
+              <Ionicons name="time-outline" size={20} color={Colors.primary} />
+              <Text style={styles.timeText}>{entry.time}</Text>
+            </View>
+            <View style={styles.activitiesContainer}>
+              <View style={styles.activityItem}>
+                <Text style={styles.activityLabel}>Teacher Activities:</Text>
+                <Text style={styles.activityText}>{entry.teacherActivites}</Text>
+              </View>
+              <View style={styles.activityItem}>
+                <Text style={styles.activityLabel}>Learner Activities:</Text>
+                <Text style={styles.activityText}>{entry.learnerActivities}</Text>
+              </View>
+            </View>
           </View>
         ))}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Learning Objectives</Text>
-        {lesson.objectives.map((objective, index) => (
-          <Text key={index}>• {objective}</Text>
-        ))}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Activities</Text>
-        {Object.entries(lesson.activities).map(([key, value]) => (
-          <View key={key} style={styles.activity}>
-            <Text style={styles.subSectionTitle}>{formatActivitesKey(key)}:</Text>
-            <Text>{value}</Text>
-          </View>
-        ))}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Teacher Evaluation:</Text>
-        <Text>{lesson.teacherEvaluation}</Text>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Pupil Evaluation:</Text>
-        <Text>{lesson.pupilEvaluation}</Text>
       </View>
     </ScrollView>
   )
@@ -136,57 +165,136 @@ export default function ViewLesson() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 30,
-    paddingTop: 20,
-    paddingBottom: 400,
+    flex: 1,
+    backgroundColor: '#F7FAFC',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  titles: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  titleAndButton: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 4,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 4,
+    color: '#718096',
   },
-  section: {
-    marginTop: 16,
+  closeButton: {
+    padding: 8,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    margin: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  activityType: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  activity: {
-    marginBottom: 8,
-  },
-  subSectionTitle: {
-    fontWeight: 'bold',
-  },
-  teachersSignature: {
-    flex: 1,
+  cardHeader: {
     flexDirection: 'row',
-    gap: 16,
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  infoLabel: {
     fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+    width: 80,
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2D3748',
+  },
+  resourcesContainer: {
+    gap: 16,
+  },
+  resourceItem: {
+    gap: 8,
+  },
+  resourceLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+  },
+  resourceText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
+  },
+  detailsContainer: {
+    gap: 20,
+  },
+  detailItem: {
+    gap: 8,
+  },
+  detailLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+  },
+  detailText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
+  },
+  developmentEntry: {
+    borderLeftWidth: 2,
+    borderLeftColor: Colors.primary,
+    paddingLeft: 16,
+    marginBottom: 20,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  timeText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.primary,
+  },
+  activitiesContainer: {
+    gap: 16,
+  },
+  activityItem: {
+    gap: 8,
+  },
+  activityLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4A5568',
+  },
+  activityText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
   },
 })

@@ -1,4 +1,4 @@
-import { Modal, View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native'
+import { Modal, View, Text, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { useState } from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import TextInputField from '../TextInputField'
@@ -41,8 +41,15 @@ export default function AddLearningDevelopmentEntry({
       updateSOWData({
         learningDevelopmentEntries: [...lessonData.learningDevelopmentEntries, entry],
       })
+      onClose()
+    } else {
+      Alert.alert('Invalid Entry', 'Please fill in all required fields before saving.', [
+        {
+          text: 'OK',
+          style: 'default',
+        },
+      ])
     }
-    onClose()
   }
   return (
     <Modal animationType="slide" transparent={true} visible={isVisible}>

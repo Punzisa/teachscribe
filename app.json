@@ -38,7 +38,14 @@
           "photosPermission": "The app accesses your photos to pick a profile picture."
         }
       ],
-      "expo-font"
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/images/court_of_arms.png"]
+        }
+      ],
+      "expo-font",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true

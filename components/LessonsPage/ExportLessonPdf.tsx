@@ -28,115 +28,182 @@ export const generateLessonHTML = async (lessonData: LessonData, teacherProfile:
   const imageBase64 = await getImageBase64()
 
   return `
-      <html>
+  <html>
         <head>
-             <style>
-             html, body {
+          <style>
+            html, body {
               height: 100%;
               margin: 0;
               padding: 0;
+              background-color: #f9f9f9;
             }
             body {
               font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
               margin: 0;
               display: flex;
               flex-direction: column;
+              color: #333;
             }
-              .content-wrapper {
+            .content-wrapper {
               flex: 1 0 auto;
-              margin: 5px;
-              padding-left: 20px;
+              margin: 20px;
+              padding: 30px;
+              background-color: white;
+              border-radius: 10px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
-              .heading {
+            .heading {
               text-align: center;
+              margin-bottom: 30px;
             }
-            h1 { color: #333; }
-            .lesson-info { margin-bottom: 5px; padding: 10px 0; }
-            .lesson-content { line-height: 1.2; }
-            .footer {
-              flex-shrink: 0;
-              padding: 10px 20px;
-              text-align: center;
-              font-size: 12px;
-              color: #666;
-              border-top: 1px solid #eee;
+            .heading h3 {
+              margin: 10px 0;
+              color: #2c3e50;
             }
-              table, td, th {  
-              border: 1px solid #ddd;
-              text-align: left;
+            .lesson-info {
+              background-color: #f8f9fa;
+              padding: 20px;
+              border-radius: 8px;
+              margin-bottom: 25px;
+            }
+            .lesson-info p {
+              margin: 8px 0;
+              line-height: 1.6;
+            }
+            .lesson-info strong {
+              color: #2c3e50;
+              min-width: 120px;
+              display: inline-block;
+            }
+            .lesson-content {
+              line-height: 1.6;
+            }
+            .lesson-content h4 {
+              color: #2c3e50;
+              border-bottom: 2px solid #e9ecef;
+              padding-bottom: 8px;
+              margin-top: 25px;
             }
             table {
               border-collapse: collapse;
-              width: 95%;
-               margin: 0 auto;
-
+              width: 100%;
+              margin: 20px 0;
+              background-color: white;
             }
-            th, td {
-              padding: 5px;
+            th {
+              background-color: #f1f4f6;
+              color: #2c3e50;
+              font-weight: 600;
+              padding: 12px;
+              border: 1px solid #dee2e6;
+            }
+            td {
+              padding: 12px;
+              border: 1px solid #dee2e6;
+              vertical-align: top;
+            }
+            tr:nth-child(even) {
+              background-color: #f8f9fa;
+            }
+            tr:hover {
+              background-color: #f2f2f2;
+            }
+            .footer {
+              flex-shrink: 0;
+              padding: 15px 20px;
+              text-align: center;
+              font-size: 12px;
+              color: #6c757d;
+              border-top: 1px solid #dee2e6;
+              background-color: white;
+              margin-top: 20px;
+            }
+            .logo {
+              width: 70px;
+              height: 70px;
+              display: block;
+              margin: 0 auto 20px auto;
+              object-fit: contain;
+            }
+            @media print {
+              body {
+                background-color: white;
+              }
+              .content-wrapper {
+                box-shadow: none;
+                margin: 0;
+                padding: 20px;
+              }
+              .lesson-info {
+                background-color: white;
+                border: 1px solid #dee2e6;
+              }
             }
           </style>
         </head>
         <body>
-        <div class="content-wrapper">
-        <img src="${imageBase64}" alt="Court of Arms" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
-          <div class="heading">
-          <h3>Ministry of Education</h3>
-          <h3>${teacherProfile.schoolName}</h3>
-          <h3>Lesson Plan</h3>
-          </div>
-          <div class="lesson-info">
-            <p><strong>Date:</strong> ${lessonData.date.toDateString()}</p>
-            <p><strong>Teacher Name:</strong> ${teacherProfile.salutation} ${teacherProfile.firstName} ${teacherProfile.lastName}</p>
-            <p><strong>Class:</strong> ${lessonData.class}</p>
-            <p><strong>Subject:</strong> ${lessonData.subject}</p>
-            <p><strong>Title:</strong> ${lessonData.title}</p>
-            <p><strong>Time:</strong> ${lessonData.date.toLocaleTimeString()}</p>
-            <p><strong>Duration:</strong> ${lessonData.duration}</p>
-            <p><strong>Resources:</strong> ${lessonData.resources}</p>
-            <p><strong>References:</strong> ${lessonData.resources}</p>
-          </div>
+          <div class="content-wrapper">
+            <img src="${imageBase64}" alt="Court of Arms" class="logo" />
+            <div class="heading">
+              <h3>Ministry of Education</h3>
+              <h3>${teacherProfile.schoolName}</h3>
+              <h3>Lesson Plan</h3>
+            </div>
+            <div class="lesson-info">
+              <p><strong>Date:</strong> ${lessonData.date.toDateString()}</p>
+              <p><strong>Teacher Name:</strong> ${teacherProfile.salutation} ${teacherProfile.firstName} ${teacherProfile.lastName}</p>
+              <p><strong>Class:</strong> ${lessonData.class}</p>
+              <p><strong>Subject:</strong> ${lessonData.subject}</p>
+              <p><strong>Title:</strong> ${lessonData.title}</p>
+              <p><strong>Time:</strong> ${lessonData.date.toLocaleTimeString()}</p>
+              <p><strong>Duration:</strong> ${lessonData.duration}</p>
+              <p><strong>Resources:</strong> ${lessonData.resources}</p>
+              <p><strong>References:</strong> ${lessonData.resources}</p>
+            </div>
 
-          <div class="lesson-content">
-            <h4>Description:</h4>
-              ${lessonData.description}
-            <h4>Major Learning Outcome:</h4>
-              ${lessonData.majorLearningOutcome}
-            <h4>Evidence of Attainment:</h4>
-              ${lessonData.evidenceOfAttainment}
-            <h4>Rationale:</h4>
-              ${lessonData.rationale}
-            
-            <h4>Lesson Development</h4>
-            <table>
-              <tr>
-                <th>Time</th>
-                <th>Teacher Activities</th>
-                <th>Learner Activities</th>
-              </tr>
-              ${lessonData.learningDevelopmentEntries
-                .map(
-                  (entry: LearningDevelopment) => `
+            <div class="lesson-content">
+              <h4>Description</h4>
+              <div>${lessonData.description}</div>
+
+              <h4>Major Learning Outcome</h4>
+              <div>${lessonData.majorLearningOutcome}</div>
+
+              <h4>Evidence of Attainment</h4>
+              <div>${lessonData.evidenceOfAttainment}</div>
+
+              <h4>Rationale</h4>
+              <div>${lessonData.rationale}</div>
+              
+              <h4>Lesson Development</h4>
+              <table>
                 <tr>
-                  <td>${entry.time}</td>
-                  <td>${entry.teacherActivites}</td>
-                  <td>${entry.learnerActivities}</td>
+                  <th>Time</th>
+                  <th>Teacher Activities</th>
+                  <th>Learner Activities</th>
                 </tr>
-              `
-                )
-                .join('')}
-                </tr>
-            </table>
-        
-            <h4>Teacher Evaluation</h4>
-            ${lessonData.teacherEvaluation}
-            <h4>Pupil Evaluation</h4>
-            ${lessonData.pupilEvaluation}
-            
+                ${lessonData.learningDevelopmentEntries
+                  .map(
+                    (entry: LearningDevelopment) => `
+                  <tr>
+                    <td>${entry.time}</td>
+                    <td>${entry.teacherActivites}</td>
+                    <td>${entry.learnerActivities}</td>
+                  </tr>
+                `
+                  )
+                  .join('')}
+              </table>
+          
+              <h4>Teacher Evaluation</h4>
+              <div>${lessonData.teacherEvaluation}</div>
+
+              <h4>Pupil Evaluation</h4>
+              <div>${lessonData.pupilEvaluation}</div>
+            </div>
           </div>
-        </div>
-        <footer class="footer">
-          Powered by TeachScribe
-        </footer>
+          <footer class="footer">
+            Powered by TeachScribe
+          </footer>
         </body>
       </html>
     `
