@@ -15,6 +15,7 @@ const LessonDetails: React.FC<LessonDetailsProps> = ({ lessonData, updateLessonD
         setTextValue={lessonData.title}
         onInputChange={(text: string) => updateLessonData({ title: text })}
         placeholder="Title"
+        multiline
       />
       <TextInputField
         setTextValue={lessonData.description}

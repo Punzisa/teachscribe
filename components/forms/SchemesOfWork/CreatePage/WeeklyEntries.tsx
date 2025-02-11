@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
-
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { SOWData, SOWEntry } from './CreateSchemesOfWork'
 import { Colors } from '@/constants/Colors'
 import AddWeekEntry from './AddWeekEntry'
@@ -25,33 +25,45 @@ const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ alignItems: 'center' }}>
-        <TouchableOpacity style={styles.newEntryButton} onPress={toggleShowNewEntryModal}>
-          <Text style={styles.newEntryButtonText}>Add</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Weekly Entries</Text>
+        <TouchableOpacity style={styles.addButton} onPress={toggleShowNewEntryModal}>
+          <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      {sowData.entries.length === 0 ? (
-        <View style={styles.noEntryContainer}>
-          <Text style={{ textAlign: 'center' }}>No Entries Added</Text>
-        </View>
-      ) : (
-        <View>
-          {sowData.entries.map((entry) => (
-            <View key={entry.id} style={styles.entryContainer}>
-              <View style={{ flexDirection: 'column', gap: 4, width: '80%' }}>
-                <Text style={styles.weekText}>Week: {entry.week}</Text>
-                <Text style={{ flexWrap: 'wrap' }}>{entry.learningOutcome}</Text>
-              </View>
-              <>
-                <TouchableOpacity onPress={() => handleDeleteEntry(entry)}>
-                  <Text style={styles.deleteButtonText}>Delete</Text>
+
+      <ScrollView style={styles.entriesContainer} showsVerticalScrollIndicator={false}>
+        {sowData.entries.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <Ionicons name="calendar-outline" size={48} color={Colors.primary} />
+            <Text style={styles.emptyStateText}>No Entries Added</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Tap the "Add Entry" button to create your first weekly entry
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.entriesList}>
+            {sowData.entries.map((entry) => (
+              <View key={entry.id} style={styles.entryCard}>
+                <View style={styles.weekBadge}>
+                  <Text style={styles.weekBadgeText}>Week {entry.week}</Text>
+                </View>
+                <View style={styles.entryContent}>
+                  <Text style={styles.learningOutcomeTitle}>Learning Outcome:</Text>
+                  <Text style={styles.learningOutcomeText}>{entry.learningOutcome}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteEntry(entry)}>
+                  <Ionicons name="trash-outline" size={20} color={Colors.primary} />
                 </TouchableOpacity>
-              </>
-            </View>
-          ))}
-        </View>
-      )}
+              </View>
+            ))}
+          </View>
+        )}
+      </ScrollView>
+
       {showNewEntryModal && (
         <AddWeekEntry
           isVisible={showNewEntryModal}
@@ -64,42 +76,115 @@ const WeeklyEntries: React.FC<SOWProps> = ({ sowData, updateSOWData }) => {
   )
 }
 
-export default WeeklyEntries
-
 const styles = StyleSheet.create({
-  noEntryContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
   },
-  newEntryButton: {
-    backgroundColor: Colors.primary,
-    marginBottom: 20,
-    width: 70,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
-  newEntryButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2D3748',
   },
-  entryContainer: {
+  addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 5,
-    backgroundColor: '#fff',
-    borderWidth: 0.2,
-    borderRadius: 3,
-    borderColor: '#222',
-    padding: 10,
-    marginBottom: 10,
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 25,
+    gap: 8,
   },
-  weekText: {
-    fontWeight: '500',
+
+  entriesContainer: {
+    flex: 1,
+    padding: 16,
   },
-  deleteButtonText: {
-    color: 'red',
+  emptyStateContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 32,
+    marginTop: 20,
+    gap: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: '#718096',
+    textAlign: 'center',
+  },
+  entriesList: {
+    gap: 16,
+  },
+  entryCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  weekBadge: {
+    backgroundColor: Colors.primary + '20', // Adding 20% opacity
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  weekBadgeText: {
+    color: Colors.primary,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  entryContent: {
+    gap: 8,
+  },
+  learningOutcomeTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4A5568',
+  },
+  learningOutcomeText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    padding: 8,
   },
 })
+
+export default WeeklyEntries

@@ -48,13 +48,10 @@ const Lessons: React.FC<LessonProps> = ({ lesson }) => {
     setShowDropdown(!showDropdown)
   }
 
-  const buttons = [
-    // { id: '1', title: 'Edit' },
-    { id: '2', title: 'Export' },
-    // { id: '3', title: 'Copy' },
-    { id: '4', title: 'View' },
-    { id: '5', title: 'Delete' },
-    // { id: '6', title: 'Submit' },
+  const actionButtons = [
+    { id: '4', title: 'View', icon: 'eye-outline', color: Colors.primary },
+    { id: '2', title: 'Export', icon: 'share-outline', color: '#4CAF50' },
+    { id: '5', title: 'Delete', icon: 'trash-outline', color: '#DC3545' },
   ]
 
   const handlePress = (button: string) => {
@@ -73,31 +70,55 @@ const Lessons: React.FC<LessonProps> = ({ lesson }) => {
   }
 
   return (
-    <View style={styles.lessonContainer}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.lessonTitle}>{lesson.title}</Text>
-        <TouchableOpacity key={lesson.id} onPress={toggleDropdown}>
-          <Ionicons
-            name={showDropdown ? 'chevron-up' : 'chevron-down'}
-            size={24}
-            color={colorScheme === 'dark' ? 'white' : 'black'}
-          />
-        </TouchableOpacity>
-      </View>
+    <View style={styles.lessonCard}>
+      <TouchableOpacity style={styles.cardHeader} onPress={toggleDropdown} activeOpacity={0.7}>
+        <View style={styles.headerContent}>
+          <View style={styles.titleSection}>
+            <Ionicons name="book-outline" size={20} color={Colors.primary} />
+            <Text style={styles.lessonTitle}>{lesson.title}</Text>
+          </View>
+          <View style={styles.classBadge}>
+            <Text style={styles.classText}>{lesson.class}</Text>
+          </View>
+        </View>
+        <Ionicons
+          name={showDropdown ? 'chevron-up' : 'chevron-down'}
+          size={24}
+          color={Colors.primary}
+        />
+      </TouchableOpacity>
+
       {showDropdown && (
-        <View>
-          <View style={styles.lessonButtons}>
-            {buttons.map((item) => (
-              <TouchableOpacity key={item.id} onPress={() => handlePress(item.title)}>
-                <Text style={styles.lessonButtonText}>{item.title}</Text>
+        <View style={styles.cardContent}>
+          <View style={styles.actionButtons}>
+            {actionButtons.map((button) => (
+              <TouchableOpacity
+                key={button.id}
+                style={[styles.actionButton, { backgroundColor: button.color }]}
+                onPress={() => handlePress(button.title)}>
+                <Ionicons name={button.icon} size={18} color="white" />
+                <Text style={styles.actionButtonText}>{button.title}</Text>
               </TouchableOpacity>
             ))}
           </View>
-          <Text style={styles.lessonSubTitles}>Description</Text>
-          <Text>{lesson.description}</Text>
-          <View style={{ height: 10 }} />
-          <Text style={styles.lessonSubTitles}>Teaching Activity</Text>
-          <Text>{lesson.activities.teachingActivities}</Text>
+
+          <View style={styles.lessonDetails}>
+            <View style={styles.detailItem}>
+              <View style={styles.detailHeader}>
+                <Ionicons name="information-circle-outline" size={20} color={Colors.primary} />
+                <Text style={styles.detailTitle}>Description</Text>
+              </View>
+              <Text style={styles.detailText}>{lesson.description}</Text>
+            </View>
+
+            <View style={styles.detailItem}>
+              <View style={styles.detailHeader}>
+                <Ionicons name="clipboard-outline" size={20} color={Colors.primary} />
+                <Text style={styles.detailTitle}>Teaching Activity</Text>
+              </View>
+              <Text style={styles.detailText}>{lesson.activities.teachingActivities}</Text>
+            </View>
+          </View>
         </View>
       )}
     </View>
@@ -146,23 +167,29 @@ export default function LessonPlans() {
   )
 
   return (
-    <ScrollView style={styles.container}>
-      <View>
-        <Text style={styles.sectionTitle}>Class</Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Lesson Plans</Text>
+        <Text style={styles.headerSubtitle}>{lessons?.length || 0} lessons available</Text>
+      </View>
+
+      <View style={styles.filterSection}>
+        <Text style={styles.filterLabel}>Filter by Class</Text>
         <ClassDropdown
           options={classOptions}
           onSelect={handleClassSelect}
           placeholder="Select Class"
         />
       </View>
-      <View style={styles.lessons}>
-        <Text style={styles.sectionTitle}>Lessons</Text>
+
+      <View style={styles.lessonsContainer}>
         {selectedClass &&
-          filteredLessons &&
-          filteredLessons.map((lesson) => <Lessons key={lesson.id} lesson={lesson} />)}
+          filteredLessons?.map((lesson) => <Lessons key={lesson.id} lesson={lesson} />)}
+
         {!selectedClass && (
-          <View style={styles.selectClass}>
-            <Text style={styles.selectClassText}>Class not selected</Text>
+          <View style={styles.emptyState}>
+            <Ionicons name="library-outline" size={48} color={Colors.primary} />
+            <Text style={styles.emptyStateText}>Select a class to view lessons</Text>
           </View>
         )}
       </View>
@@ -172,53 +199,138 @@ export default function LessonPlans() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+    flex: 1,
+    backgroundColor: '#F7FAFC',
   },
-  lessonContainer: {
-    padding: 10,
-    backgroundColor: 'white',
+  header: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
-
-  selectClass: {
-    backgroundColor: 'white',
-    padding: 20,
-  },
-  selectClassText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  lessons: {
-    gap: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
+  headerTitle: {
+    fontSize: 24,
     fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
-  titleContainer: {
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#718096',
+  },
+  filterSection: {
+    padding: 16,
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+    marginBottom: 8,
+  },
+  lessonsContainer: {
+    padding: 16,
+    gap: 16,
+  },
+  lessonCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+  },
+  headerContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  titleSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   lessonTitle: {
-    fontSize: 17,
-    fontWeight: '400',
-  },
-  lessonSubTitles: {
     fontSize: 16,
-    fontWeight: '400',
-    marginBottom: 5,
+    fontWeight: '600',
+    color: '#2D3748',
   },
-  lessonButtons: {
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    gap: 8,
-    borderBottomColor: '#D5D8DE',
-    marginBottom: 10,
+  classBadge: {
+    backgroundColor: '#EDF2F7',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
   },
-  lessonButtonText: {
+  classText: {
+    fontSize: 14,
     color: Colors.primary,
+    fontWeight: '500',
+  },
+  cardContent: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    gap: 8,
+    marginBottom: 16,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  lessonDetails: {
+    gap: 16,
+  },
+  detailItem: {
+    gap: 8,
+  },
+  detailHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  detailTitle: {
     fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+  },
+  detailText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
+    paddingLeft: 28,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    gap: 16,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: '#718096',
+    textAlign: 'center',
   },
 })

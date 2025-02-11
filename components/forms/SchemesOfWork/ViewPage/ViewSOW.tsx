@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject } from '@/context/storage'
 import { SOWData } from '../CreatePage/CreateSchemesOfWork'
+import { Colors } from '@/constants/Colors'
 
 interface TeacherData {
   salutation: string
@@ -48,36 +49,90 @@ export default function ViewSOW() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  const renderInfoItem = (icon: string, label: string, value: string) => (
+    <View style={styles.infoItem}>
+      <Ionicons name={icon} size={20} color={Colors.primary} />
+      <Text style={styles.infoLabel}>{label}:</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  )
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.titleAndButton}>
-        <Text style={styles.title}>{schemeOfWork.subject}</Text>
-        <TouchableOpacity onPress={closeButtonPressed}>
-          <Ionicons name="close" size={28} color={colorScheme === 'light' ? 'black' : 'white'} />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.title}>{schemeOfWork.subject}</Text>
+          <Text style={styles.subtitle}>Scheme of Work Details</Text>
+        </View>
+        <TouchableOpacity style={styles.closeButton} onPress={closeButtonPressed}>
+          <Ionicons name="close" size={24} color={Colors.primary} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.subtitle}>Term: {schemeOfWork.term}</Text>
-      <Text style={styles.subtitle}>Subject: {schemeOfWork.subject}</Text>
-      <Text style={styles.subtitle}>Grade: {schemeOfWork.grade}</Text>
-      <Text style={styles.subtitle}>Year: {schemeOfWork.year}</Text>
-      <Text style={styles.subtitle}>Periods Per Week: {schemeOfWork.periodsPerWeek}</Text>
-      <Text style={styles.subtitle}>Classroom: {schemeOfWork.grade}</Text>
-      <Text style={styles.subtitle}>
-        Teacher: {teacherData?.salutation} {teacherData?.firstName} {teacherData?.lastName}
-      </Text>
 
-      {schemeOfWork.entries.map((entry) => (
-        <View key={entry.id} style={styles.section}>
-          <Text style={styles.sectionTitle}>{entry.week}</Text>
-          <Text style={styles.subtitle}>Topics/Subtopics: {entry.topics}</Text>
-          <Text style={styles.subtitle}>Expected Learning Outcome: {entry.learningOutcome}</Text>
-
-          <Text style={styles.subtitle}>Methodology: {entry.methodology}</Text>
-          <Text style={styles.subtitle}>Expected Experiments: {entry.expectedExperiments}</Text>
-
-          <Text style={styles.subtitle}>Reference: {entry.reference}</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="information-circle-outline" size={24} color={Colors.primary} />
+          <Text style={styles.cardTitle}>Basic Information</Text>
         </View>
-      ))}
+
+        {renderInfoItem('calendar-outline', 'Term', schemeOfWork.term)}
+        {renderInfoItem('book-outline', 'Subject', schemeOfWork.subject)}
+        {renderInfoItem('school-outline', 'Grade', schemeOfWork.grade)}
+        {renderInfoItem('calendar-number-outline', 'Year', schemeOfWork.year)}
+        {renderInfoItem('time-outline', 'Periods/Week', schemeOfWork.periodsPerWeek)}
+        {renderInfoItem('business-outline', 'Classroom', schemeOfWork.grade)}
+        {renderInfoItem(
+          'person-outline',
+          'Teacher',
+          `${teacherData?.salutation} ${teacherData?.firstName} ${teacherData?.lastName}`
+        )}
+      </View>
+
+      <View style={styles.weeklyEntriesContainer}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="list-outline" size={24} color={Colors.primary} />
+          <Text style={styles.sectionTitle}>Weekly Schedule</Text>
+        </View>
+
+        {schemeOfWork.entries.map((entry, index) => (
+          <View key={entry.id} style={styles.weekCard}>
+            <View style={styles.weekHeader}>
+              <View style={styles.weekBadge}>
+                <Text style={styles.weekNumber}>Week</Text>
+                <Text style={styles.weekText}>{entry.week}</Text>
+              </View>
+            </View>
+
+            <View style={styles.weekContent}>
+              <View style={styles.contentItem}>
+                <Text style={styles.contentLabel}>Topics/Subtopics:</Text>
+                <Text style={styles.contentText}>{entry.topics}</Text>
+              </View>
+
+              <View style={styles.contentItem}>
+                <Text style={styles.contentLabel}>Expected Learning Outcome:</Text>
+                <Text style={styles.contentText}>{entry.learningOutcome}</Text>
+              </View>
+
+              <View style={styles.contentItem}>
+                <Text style={styles.contentLabel}>Methodology:</Text>
+                <Text style={styles.contentText}>{entry.methodology}</Text>
+              </View>
+
+              <View style={styles.contentItem}>
+                <Text style={styles.contentLabel}>Expected Experiments:</Text>
+                <Text style={styles.contentText}>{entry.expectedExperiments}</Text>
+              </View>
+
+              <View style={styles.contentItem}>
+                <Text style={styles.contentLabel}>Reference:</Text>
+                <Text style={styles.contentText}>{entry.reference}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
     </ScrollView>
   )
 }
@@ -85,57 +140,133 @@ export default function ViewSOW() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 20,
-    paddingBottom: 100,
+    backgroundColor: '#F7FAFC',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  titles: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  titleAndButton: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 4,
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 4,
+    color: '#718096',
   },
-  section: {
-    marginTop: 16,
+  closeButton: {
+    padding: 8,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    margin: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  infoLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#4A5568',
+    width: 100,
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 16,
+    color: '#2D3748',
+  },
+  weeklyEntriesContainer: {
+    padding: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2D3748',
   },
-  activityType: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginBottom: 4,
+  weekCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  activity: {
-    marginBottom: 8,
+  weekHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
   },
-  activityTitle: {
-    fontWeight: 'bold',
-  },
-  teachersSignature: {
-    flex: 1,
+  weekBadge: {
     flexDirection: 'row',
-    gap: 16,
+    alignItems: 'center',
+    gap: 8,
+  },
+  weekNumber: {
     fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  weekText: {
+    fontSize: 16,
+    color: '#718096',
+  },
+  weekContent: {
+    padding: 16,
+    gap: 16,
+  },
+  contentItem: {
+    gap: 4,
+  },
+  contentLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4A5568',
+  },
+  contentText: {
+    fontSize: 16,
+    color: '#2D3748',
+    lineHeight: 24,
   },
 })

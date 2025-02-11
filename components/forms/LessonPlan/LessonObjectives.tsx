@@ -44,7 +44,7 @@ const LessonObjectives: React.FC<LessonObjectivesProps> = ({ lessonData, updateL
         onInputChange={(newObjective: string) => setNewObjective(newObjective)}
         onIconClick={() => addObjective()}
         setTextValue={textValue}
-        multline
+        multiline
       />
       <View style={styles.lessonObjectivesList}>
         <LessonObjectivesList

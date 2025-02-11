@@ -1,72 +1,162 @@
 import { Colors } from '@/constants/Colors'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Animated, Dimensions } from 'react-native'
 import { FAB } from 'react-native-paper'
 
 const FabGroup = () => {
   const [open, setOpen] = useState(false)
+  const [animation] = useState(new Animated.Value(0))
+  const router = useRouter()
 
-  const handleRoute = (route) => {
-    router.push(route)
-    setOpen(false)
+  const handleRoute = (route: string) => {
+    handleClose()
+    setTimeout(() => router.push(route), 300)
+  }
+
+  const handleOpen = () => {
+    setOpen(true)
+    Animated.spring(animation, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start()
+  }
+
+  const handleClose = () => {
+    Animated.spring(animation, {
+      toValue: 0,
+      useNativeDriver: true,
+    }).start(() => setOpen(false))
   }
 
   const handleFabPress = () => {
-    setOpen(!open)
+    if (open) {
+      handleClose()
+    } else {
+      handleOpen()
+    }
   }
 
-  const router = useRouter()
+  const screenHeight = Dimensions.get('window').height
+
+  const fabItems = [
+    {
+      icon: 'school',
+      label: 'Lesson Plans',
+      route: '/(lesson)/lesson_plan',
+      color: Colors.primary,
+      delay: 0,
+    },
+    {
+      icon: 'notebook',
+      label: 'Schemes of Work',
+      route: '/(schemes_of_work)/create_schemes_of_work',
+      color: Colors.primary,
+      delay: 10,
+    },
+    {
+      icon: 'record',
+      label: 'Records of Work',
+      route: '/(records_of_work)/create_records_of_work',
+      color: Colors.primary,
+      delay: 20,
+    },
+  ]
 
   return (
-    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }}>
+    <>
       {open && (
-        <>
-          <FAB
-            icon="school"
-            label="Lesson Plans"
-            color="black"
-            onPress={() => handleRoute('/(lesson)/lesson_plan')}
-            style={styles.fab}
-          />
-          <FAB
-            icon="notebook"
-            color="black"
-            label="Schemes of Work"
-            onPress={() => handleRoute('/(schemes_of_work)/create_schemes_of_work')}
-            style={styles.fab}
-          />
-          <FAB
-            icon="record"
-            color="black"
-            label="Records of Work"
-            onPress={() => handleRoute('/(records_of_work)/create_records_of_work')}
-            style={styles.fab}
-          />
-          {/* <FAB
-            icon="home"
-            color="black"
-            label="Homework Sheets"
-            onPress={() => handleRoute('/(homework_sheets)/create_homework_sheet')}
-            style={styles.fab}
-          /> */}
-        </>
+        <Animated.View
+          style={[
+            styles.overlay,
+            {
+              opacity: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 0.5],
+              }),
+            },
+          ]}
+          pointerEvents={open ? 'auto' : 'none'}
+          onTouchStart={handleClose}
+        />
       )}
-      <FAB
-        icon={open ? 'close' : 'plus'}
-        color="white"
-        onPress={handleFabPress}
-        style={{ backgroundColor: open ? 'black' : Colors.primary }}
-      />
-    </View>
+      <View style={styles.container}>
+        {open &&
+          fabItems.map((item, index) => (
+            <Animated.View
+              key={item.route}
+              style={{
+                transform: [
+                  {
+                    translateY: animation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [screenHeight, 0],
+                    }),
+                  },
+                ],
+                opacity: animation,
+              }}>
+              <FAB
+                icon={item.icon}
+                label={item.label}
+                onPress={() => handleRoute(item.route)}
+                style={[styles.fab, { backgroundColor: item.color }]}
+                color="white"
+                animated={true}
+              />
+            </Animated.View>
+          ))}
+        <FAB
+          icon={open ? 'close' : 'plus'}
+          color="white"
+          onPress={handleFabPress}
+          style={[styles.mainFab, { backgroundColor: open ? '#E53935' : Colors.primary }]}
+          animated={true}
+        />
+      </View>
+    </>
   )
 }
 
-export default FabGroup
-
 const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    alignItems: 'flex-end',
+    gap: 12,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
+    zIndex: 1,
+  },
   fab: {
-    backgroundColor: '#ccc',
-    marginBottom: 12,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    borderRadius: 28,
+  },
+  mainFab: {
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    borderRadius: 28,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
+
+export default FabGroup

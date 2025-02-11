@@ -55,28 +55,6 @@ const Evaluation: React.FC<EvaluationProps> = ({ lessonData, updateLessonData })
         onInputChange={(text: string) => updateLessonData({ pupilEvaluation: text })}
         multiline
       />
-      {/* <TextInputField
-        setTextValue={lessonData.activities.teachingAids}
-        placeholder={'Teaching Aids'}
-        onInputChange={(teachingAids: string) => handleChange('teachingAids', teachingAids)}
-        multiline
-      />
-      <TextInputField
-        setTextValue={lessonData.activities.teachingActivities}
-        placeholder={'Teaching Activities'}
-        onInputChange={(teachingActivities: string) =>
-          handleChange('teachingActivities', teachingActivities)
-        }
-        multiline
-      />
-      <TextInputField
-        setTextValue={lessonData.activities.pupilActivities}
-        placeholder={'Pupil Activities'}
-        onInputChange={(pupilActivities: string) =>
-          handleChange('pupilActivities', pupilActivities)
-        }
-        multiline
-      /> */}
     </View>
   )
 }
