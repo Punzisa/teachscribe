@@ -38,5 +38,5 @@ export const Colors = {
 export const socialLoginIcon = {
   google: require('@/assets/google.png'),
   facebook: require('@/assets/facebook.png'),
-  microsoft: require('@/assets/microsoft.png'),
+  // microsoft: require('@/assets/microsoft.png'),
 }
