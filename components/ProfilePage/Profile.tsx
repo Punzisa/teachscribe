@@ -274,7 +274,7 @@ const Profile = () => {
 
           <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
             <Ionicons name="log-out-outline" size={20} color={Colors.red} />
-            <Text style={[styles.buttonText, {color: Colors.red}]}>Sign Out</Text>
+            <Text style={[styles.buttonText, { color: Colors.red }]}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
