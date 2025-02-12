@@ -20,6 +20,7 @@ import { dataChangeSubject, saveData } from '@/context/storage'
 import { Ionicons } from '@expo/vector-icons'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useAuth } from '@clerk/clerk-expo'
+import { coolDownAsync } from 'expo-web-browser'
 
 export interface ProfileData {
   salutation: string
@@ -272,8 +273,8 @@ const Profile = () => {
           )}
 
           <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
-            <Ionicons name="log-out-outline" size={20} color="white" />
-            <Text style={styles.buttonText}>Sign Out</Text>
+            <Ionicons name="log-out-outline" size={20} color={Colors.red} />
+            <Text style={[styles.buttonText, {color: Colors.red}]}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -395,7 +396,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E53E3E',
+    borderWidth: 1,
+    borderColor: Colors.red,
     padding: 14,
     borderRadius: 8,
     gap: 8,

@@ -16,6 +16,7 @@ export const Colors = {
   black: '#000',
   white: '#fff',
   green: '#31C737',
+  red: '#E53E3E',
   medium: '#6e6969',
   light: {
     text: '#11181C',
