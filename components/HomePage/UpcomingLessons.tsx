@@ -202,12 +202,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
     marginHorizontal: 10,
     borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   header: {
-    padding: 16,
+    padding: 25,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
+    borderRadius: 10,
   },
   headerTitle: {
     fontSize: 24,
@@ -224,6 +227,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    marginBottom: 10,
   },
   filterContent: {
     padding: 12,
@@ -254,7 +260,7 @@ const styles = StyleSheet.create({
   },
   lessonsList: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 5,
   },
   card: {
     backgroundColor: '#FFFFFF',
