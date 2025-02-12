@@ -110,7 +110,7 @@ const FabGroup = () => {
           icon={open ? 'close' : 'plus'}
           color="white"
           onPress={handleFabPress}
-          style={[styles.mainFab, { backgroundColor: open ? '#E53935' : Colors.primary }]}
+          style={[styles.mainFab, { backgroundColor: open ? Colors.medium : Colors.primary }]}
           animated={true}
         />
       </View>
