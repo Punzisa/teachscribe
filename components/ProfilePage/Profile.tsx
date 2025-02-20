@@ -13,14 +13,12 @@ import { Picker } from '@react-native-picker/picker'
 import { Avatar, TouchableOpacity } from 'react-native-ui-lib'
 import icon from '@/assets/images/camera_icon.png'
 import { Colors } from '@/constants/Colors'
-import { useSession } from '@/context/auth'
 import * as ImagePicker from 'expo-image-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dataChangeSubject, saveData } from '@/context/storage'
 import { Ionicons } from '@expo/vector-icons'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useAuth } from '@clerk/clerk-expo'
-import { coolDownAsync } from 'expo-web-browser'
+import { useAuth, useUser } from '@clerk/clerk-expo'
 
 export interface ProfileData {
   salutation: string
@@ -32,6 +30,7 @@ export interface ProfileData {
 
 const Profile = () => {
   const [imageUri, setImageUri] = useState<string | null>(null)
+  const { user } = useUser()
 
   const { signOut } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
@@ -85,15 +84,26 @@ const Profile = () => {
       allowsEditing: true,
       aspect: [4, 4],
       quality: 1,
+      base64: true,
     })
-
-    console.log(result)
 
     if (!result.canceled) {
       const uri = result.assets[0].uri
       try {
-        setImageUri(uri)
+        let base64Image: string = ''
+        if (result.assets[0].base64) {
+          base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`
+        }
 
+        try {
+          await user?.setProfileImage({ file: base64Image })
+        } catch (error) {
+          console.error('Failed to save image', error)
+          Alert.alert('Error', 'Failed to save image')
+          return
+        }
+
+        setImageUri(uri)
         await AsyncStorage.setItem('profileImage', uri)
         dataChangeSubject.next('profileImage')
       } catch (error) {
@@ -102,7 +112,7 @@ const Profile = () => {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!firstName.trim() || !lastName.trim() || !schoolName.trim()) {
       Alert.alert('Error', 'Please fill in all required fields')
       return
@@ -121,9 +131,20 @@ const Profile = () => {
       schoolName: schoolName.trim(),
       phoneNumber: phoneNumber.trim(),
     }
+
+    await user?.update({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      unsafeMetadata: {
+        signedUp: true,
+        schoolName: schoolName.trim(),
+        phoneNumber: phoneNumber.trim(),
+      },
+    })
     saveData('profile', updatedData)
     dataChangeSubject.next('profile')
 
+    Alert.alert('Success', 'Profile updated successfully')
     setIsEditing(false)
   }
 

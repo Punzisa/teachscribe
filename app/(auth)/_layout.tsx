@@ -24,6 +24,12 @@ const AuthLayOut = () => {
           headerShown: true,
         }}
       />
+      <Stack.Screen
+        name="setup-profile"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   )
 }
