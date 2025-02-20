@@ -1,12 +1,12 @@
 {
   "expo": {
     "newArchEnabled": true,
-    "name": "teachscribe",
-    "slug": "teachscribe",
+    "name": "punzisa",
+    "slug": "punzisa",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "teachscribe",
+    "scheme": "punzisa",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android"],
     "splash": {
@@ -16,14 +16,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.joseyaugust.teachscribe"
+      "bundleIdentifier": "com.joseyaugust.punzisa"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.joseyaugust.teachscribe"
+      "package": "com.joseyaugust.punzisa"
     },
     "web": {
       "bundler": "metro",
@@ -56,7 +56,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "c3dc74c5-0a55-4ee9-ab1d-900e9b6c555d"
+        "projectId": "58d0fb8d-5b63-4435-813e-adefff0349b9"
       }
     },
     "owner": "zedillian"
