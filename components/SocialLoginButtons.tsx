@@ -5,6 +5,7 @@ import * as WebBrowser from 'expo-web-browser'
 import { useSSO } from '@clerk/clerk-expo'
 import { OAuthStrategy } from '@clerk/types'
 import { useRouter } from 'expo-router'
+import { Alert } from 'react-native'
 
 export type SSOProvider = 'google' | 'facebook'
 
@@ -53,13 +54,19 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       // Start the authentication process by calling `startSSOFlow()`
       const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
         strategy: strategy as OAuthStrategy,
+        redirectUrl: 'punzisa://oauth',
       })
 
+      console.log('Session ID:', createdSessionId)
       // If sign in was successful, set the active session
       if (createdSessionId) {
+        Alert.alert('Login Successful', 'You are now signed in!')
+        console.log('Was successful in logging in!')
         await setActive!({ session: createdSessionId })
-        router.replace('/(tabs)')
+        router.replace(`/(tabs)`)
       } else {
+        Alert.alert('Login Failed', 'Please try again.')
+
         // If there is no `createdSessionId`,
         // there are missing requirements, such as MFA
         // Use the `signIn` or `signUp` returned from `startSSOFlow`
