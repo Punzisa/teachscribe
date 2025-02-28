@@ -7,7 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { tokenCache } from '@/cache'
 import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo'
-
+import { secureStore } from '@clerk/clerk-expo/secure-store'
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
@@ -62,7 +62,11 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} standardBrowser={false}>
+    <ClerkProvider
+      tokenCache={tokenCache}
+      publishableKey={publishableKey}
+      standardBrowser={false}
+      __experimental_resourceCache={secureStore}>
       <ClerkLoaded>
         <ThemeProvider value={DefaultTheme}>
           <GestureHandlerRootView>
